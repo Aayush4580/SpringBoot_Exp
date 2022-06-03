@@ -1,12 +1,15 @@
 package com.example.demo.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.BoardDTO;
 import com.example.demo.entity.Department;
+import com.example.demo.entity.DepartmentReqBody;
 import com.example.demo.exception.DepartmentNotFoundException;
 import com.example.demo.repository.DepartmentRepository;
 
@@ -17,10 +20,27 @@ public class DepartmentServiceImpl implements DepartmentService {
 	private DepartmentRepository departmentRepository;
 
 	@Override
-	public Department saveDepartment(Department department) {
+	public String saveDepartment(DepartmentReqBody departmentReqBody) {
 		// TODO Auto-generated method stub
+		List<BoardDTO> boardDTOs = boardLists();
+		List<Department> departments = new ArrayList<Department>();
+		for (Integer board : departmentReqBody.getBoardList()) {
 
-		return departmentRepository.save(department);
+			Department department = new Department();
+
+			for (BoardDTO boardDTO : boardDTOs) {
+				if (boardDTO.getBoardId() == board) {
+					department.setBoard(boardDTO.getBoardName());
+				}
+			}
+
+			department.setDepartmentAddress(departmentReqBody.getDepartment().getDepartmentAddress());
+			department.setDepartmentCode(departmentReqBody.getDepartment().getDepartmentCode());
+			department.setDepartmentName(departmentReqBody.getDepartment().getDepartmentName());
+			departments.add(department);
+		}
+		departmentRepository.saveAll(departments);
+		return "list of department saved successfully";
 	}
 
 	@Override
@@ -32,12 +52,12 @@ public class DepartmentServiceImpl implements DepartmentService {
 	@Override
 	public Department fetchDepartmentById(Long id) throws DepartmentNotFoundException {
 		// TODO Auto-generated method stub
-		Optional<Department> department= departmentRepository.findById(id);
-		if(!department.isPresent()) {
-			throw new DepartmentNotFoundException("Department not found with id: "+id);
+		Optional<Department> department = departmentRepository.findById(id);
+		if (!department.isPresent()) {
+			throw new DepartmentNotFoundException("Department not found with id: " + id);
 		}
 		return department.get();
-		
+
 	}
 
 	@Override
@@ -59,6 +79,14 @@ public class DepartmentServiceImpl implements DepartmentService {
 	public Department fetchDepartmentByName(String name) {
 		// TODO Auto-generated method stub
 		return departmentRepository.findByDepartmentNameIgnoreCase(name);
+	}
+
+	private List<BoardDTO> boardLists() {
+		List<BoardDTO> boardDTOs = new ArrayList<BoardDTO>();
+		boardDTOs.add(new BoardDTO(1, "ICSC"));
+		boardDTOs.add(new BoardDTO(2, "CBSC"));
+		boardDTOs.add(new BoardDTO(3, "STATE BOARD"));
+		return boardDTOs;
 	}
 
 }

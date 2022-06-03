@@ -16,16 +16,17 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder //this allows to create object with any number of arguments (you can set all or few)
+@Builder // this allows to create object with any number of arguments
 @Entity
 public class Department {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long departmentId;
-	@NotBlank(message="Please add department name")
+	@NotBlank(message = "Please add department name")
 	private String departmentName;
 	private String departmentAddress;
 	private String departmentCode;
-	
+	private String board;
+
 }
