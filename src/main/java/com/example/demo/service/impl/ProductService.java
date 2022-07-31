@@ -8,23 +8,39 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.entity.Product;
+import com.example.demo.entity.ProductExcelProcessState;
+import com.example.demo.repository.ProductExcelProcessStateRepository;
 import com.example.demo.repository.ProductRepository;
 
 @Service
 public class ProductService {
 	@Autowired
 	private ProductRepository productRepository;
+	@Autowired
+	private ProductExcelProcessStateRepository excelProcessStateRepository;
 
-	public void save(MultipartFile file) {
+	public ProductExcelProcessState save(MultipartFile file) {
+		ProductExcelProcessState excelProcessState = new ProductExcelProcessState();
+		excelProcessState.setStatus("IN_PROGRESS");
+		ProductExcelProcessState processState = excelProcessStateRepository.save(excelProcessState);
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				try {
+					List<Product> products = ExcelHelper.convertExcelToListOfProduct(file.getInputStream());
+					System.out.println("products  >>> " + products);
 
-		try {
-			List<Product> products = ExcelHelper.convertExcelToListOfProduct(file.getInputStream());
-			System.out.println("products  >>> " + products);
-			this.productRepository.saveAll(products);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+					productRepository.saveAll(products);
+					excelProcessState.setStatus("COMPLETE");
+					excelProcessStateRepository.save(excelProcessState);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		thread.start();
+		return processState;
 	}
 
 	public List<Product> getAllProducts() {

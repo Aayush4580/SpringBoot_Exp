@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.entity.Department;
 import com.example.demo.entity.DepartmentReqBody;
+import com.example.demo.entity.ProductExcelProcessState;
 import com.example.demo.exception.DepartmentNotFoundException;
 import com.example.demo.service.DepartmentService;
+import com.example.demo.service.ProductExcelProcessStateService;
 import com.example.demo.service.impl.ExcelHelper;
 import com.example.demo.service.impl.ProductService;
 
@@ -36,6 +39,9 @@ public class DepartmentController {
 	private DepartmentService departmentService;
 
 	@Autowired
+	private ProductExcelProcessStateService excelProcessStateService;
+
+	@Autowired
 	private ProductService productService;
 
 	private final Logger logger = LoggerFactory.getLogger(DepartmentController.class);
@@ -43,10 +49,20 @@ public class DepartmentController {
 	@PostMapping("/upload")
 	public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
 		if (ExcelHelper.checkExcelFormat(file)) {
-			this.productService.save(file);
-			return ResponseEntity.ok(Map.of("message", "File is uploaded and data is saved to db"));
+			ProductExcelProcessState excelProcessState = productService.save(file);
+			System.out.println("exprocess State >>> ");
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("excelProcessId", excelProcessState.getProcessId().toString());
+			map.put("message", "Please request with the processId to get the updated status");
+			return ResponseEntity.ok(map);
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please upload excel file ");
+	}
+
+	@GetMapping("/getExcelUploadStatus/{id}")
+	public ProductExcelProcessState getExcelUploadStatus(@PathVariable("id") String id) {
+		logger.info("inside getExcelUploadStatus method");
+		return excelProcessStateService.getProductProcessStatus(Long.parseLong(id));
 	}
 
 	@PostMapping("/department")
