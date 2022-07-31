@@ -43,12 +43,8 @@ public class DepartmentController {
 	@PostMapping("/upload")
 	public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
 		if (ExcelHelper.checkExcelFormat(file)) {
-			// true
-
 			this.productService.save(file);
-
 			return ResponseEntity.ok(Map.of("message", "File is uploaded and data is saved to db"));
-
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please upload excel file ");
 	}
