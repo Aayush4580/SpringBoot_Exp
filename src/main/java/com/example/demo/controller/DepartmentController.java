@@ -6,8 +6,6 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +29,9 @@ import com.example.demo.service.ProductExcelProcessStateService;
 import com.example.demo.service.impl.ExcelHelper;
 import com.example.demo.service.impl.ProductService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/api")
 public class DepartmentController {
@@ -43,8 +44,6 @@ public class DepartmentController {
 
 	@Autowired
 	private ProductService productService;
-
-	private final Logger logger = LoggerFactory.getLogger(DepartmentController.class);
 
 	@PostMapping("/upload")
 	public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
@@ -61,13 +60,13 @@ public class DepartmentController {
 
 	@GetMapping("/getExcelUploadStatus/{id}")
 	public ProductExcelProcessState getExcelUploadStatus(@PathVariable("id") String id) {
-		logger.info("inside getExcelUploadStatus method");
+		log.info("inside getExcelUploadStatus method");
 		return excelProcessStateService.getProductProcessStatus(Long.parseLong(id));
 	}
 
 	@PostMapping("/department")
 	public String saveDepartment(@Valid @RequestBody DepartmentReqBody department) {
-		logger.info("inside save department method");
+		log.info("inside save department method");
 		return departmentService.saveDepartment(department);
 	}
 

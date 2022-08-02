@@ -23,20 +23,16 @@ public class ProductService {
 		ProductExcelProcessState excelProcessState = new ProductExcelProcessState();
 		excelProcessState.setStatus("IN_PROGRESS");
 		ProductExcelProcessState processState = excelProcessStateRepository.save(excelProcessState);
-		Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				try {
-					List<Product> products = ExcelHelper.convertExcelToListOfProduct(file.getInputStream());
-					System.out.println("products  >>> " + products);
+		Thread thread = new Thread(() -> {
+			try {
+				List<Product> products = ExcelHelper.convertExcelToListOfProduct(file.getInputStream());
+				System.out.println("products  >>> " + products);
 
-					productRepository.saveAll(products);
-					excelProcessState.setStatus("COMPLETE");
-					excelProcessStateRepository.save(excelProcessState);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				productRepository.saveAll(products);
+				excelProcessState.setStatus("COMPLETE");
+				excelProcessStateRepository.save(excelProcessState);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		});
 		thread.start();
