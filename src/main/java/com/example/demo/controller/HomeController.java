@@ -41,8 +41,8 @@ public class HomeController {
 		List<NameOnly> list = new ArrayList<>();
 		for (AnotherNameOnly anotherNameOnly : anotherNameOnlies) {
 			NameOnly nameOnly = new NameOnly();
-			nameOnly.setProduct_name("Object " + anotherNameOnly.getLastname());
-			nameOnly.setProduct_desc("Object " + anotherNameOnly.getFirstname());
+			nameOnly.setProduct_name("Object " + anotherNameOnly.getProdName());
+			nameOnly.setProduct_desc("Object " + anotherNameOnly.getProdDesc());
 			list.add(nameOnly);
 		}
 		return list;
