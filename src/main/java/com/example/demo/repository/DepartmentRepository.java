@@ -1,5 +1,7 @@
 package com.example.demo.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -22,7 +24,7 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
 	}
 
 	@Query(value = "SELECT PRODUCT_DESC firstname, PRODUCT_NAME lastname  FROM PRODUCT where id='22637'", nativeQuery = true)
-	AnotherNameOnly findByNativeQueryAnother(Integer id);
+	List<AnotherNameOnly> findByNativeQueryAnother(Integer id);
 
 	public static interface AnotherNameOnly {
 

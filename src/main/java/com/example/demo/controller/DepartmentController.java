@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class DepartmentController {
 	// http://localhost:8080/swagger-ui/index.html#/
 	@Autowired
@@ -59,8 +61,9 @@ public class DepartmentController {
 	}
 
 	@GetMapping("/getExcelUploadStatus/{id}")
-	public ProductExcelProcessState getExcelUploadStatus(@PathVariable("id") String id) {
+	public ProductExcelProcessState getExcelUploadStatus(@PathVariable("id") String id) throws InterruptedException {
 		log.info("inside getExcelUploadStatus method");
+		Thread.sleep(2000);
 		return excelProcessStateService.getProductProcessStatus(Long.parseLong(id));
 	}
 
