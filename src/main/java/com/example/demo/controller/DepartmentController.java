@@ -63,7 +63,7 @@ public class DepartmentController {
 	@GetMapping("/getExcelUploadStatus/{id}")
 	public ProductExcelProcessState getExcelUploadStatus(@PathVariable("id") String id) throws InterruptedException {
 		log.info("inside getExcelUploadStatus method");
-		Thread.sleep(2000);
+//		Thread.sleep(2000);
 		return excelProcessStateService.getProductProcessStatus(Long.parseLong(id));
 	}
 
