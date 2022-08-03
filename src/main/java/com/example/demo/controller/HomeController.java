@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.AnotherNameOnly;
 import com.example.demo.dto.NameOnly;
+import com.example.demo.dto.RunCreateTemplateDTO;
 import com.example.demo.repository.DepartmentRepository;
 
 @RestController
@@ -25,6 +26,20 @@ public class HomeController {
 	@GetMapping("/")
 	public String serverUp() {
 		return "server running";
+	}
+
+	@GetMapping("/createTemplate")
+	public RunCreateTemplateDTO createTemplate() {
+		RunCreateTemplateDTO createTemplateDTO = new RunCreateTemplateDTO();
+		createTemplateDTO.setRegressionVal("");
+		createTemplateDTO.setDefaultSegment("data");
+		createTemplateDTO.setData(new RunCreateTemplateDTO.CheckBox(true, false));
+		createTemplateDTO.setBusiness(new RunCreateTemplateDTO.CheckBox(false, false));
+		RunCreateTemplateDTO.CheckBox regressionCheckbox = new RunCreateTemplateDTO.CheckBox();
+		regressionCheckbox.setChecked(true);
+		regressionCheckbox.setIsDisable(true);
+		createTemplateDTO.setRegression(regressionCheckbox);
+		return createTemplateDTO;
 	}
 
 //	@GetMapping("/test")
