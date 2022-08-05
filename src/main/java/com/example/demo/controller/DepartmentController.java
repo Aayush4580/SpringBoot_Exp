@@ -27,8 +27,8 @@ import com.example.demo.entity.ProductExcelProcessState;
 import com.example.demo.exception.DepartmentNotFoundException;
 import com.example.demo.service.DepartmentService;
 import com.example.demo.service.ProductExcelProcessStateService;
+import com.example.demo.service.ProductService;
 import com.example.demo.service.impl.ExcelHelper;
-import com.example.demo.service.impl.ProductService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,7 +50,7 @@ public class DepartmentController {
 	@PostMapping("/upload")
 	public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
 		if (ExcelHelper.checkExcelFormat(file)) {
-			ProductExcelProcessState excelProcessState = productService.save(file);
+			ProductExcelProcessState excelProcessState = productService.saveExcel(file);
 			System.out.println("exprocess State >>> ");
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("excelProcessId", excelProcessState.getProcessId().toString());
