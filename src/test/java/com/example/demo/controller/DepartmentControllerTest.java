@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.demo.entity.Department;
+import com.example.demo.exception.DepartmentNotFoundException;
 import com.example.demo.service.DepartmentService;
 
 @WebMvcTest
@@ -59,8 +60,16 @@ public class DepartmentControllerTest {
 	void fetchDepartmentById() throws Exception {
 		Mockito.when(departmentService.fetchDepartmentById(1L)).thenReturn(department);
 
-		mockMvc.perform(get("/department/1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		mockMvc.perform(get("/api/department/1").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.departmentName").value(department.getDepartmentName()));
+	}
+
+	@Test
+	void fetchDepartmentByIdException() throws Exception {
+		Mockito.when(departmentService.fetchDepartmentById(1L)).thenThrow(new DepartmentNotFoundException("Not Found"));
+
+		mockMvc.perform(get("/api/department/1").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound());
 	}
 
 }

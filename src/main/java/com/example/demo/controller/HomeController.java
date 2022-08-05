@@ -26,8 +26,8 @@ public class HomeController {
 	@Value("${welcome.message}")
 	private String message;
 
-	@Autowired
-	private DepartmentRepository departmentRepository;
+	// @Autowired
+	// private DepartmentRepository departmentRepository;
 
 	@GetMapping("/")
 	public String serverUp() throws Exception {
@@ -111,17 +111,17 @@ public class HomeController {
 //		return obj;
 //	}
 
-	@GetMapping("/test2")
-	public List<NameOnly> checkNamedRep2o() {
-		List<AnotherNameOnly> anotherNameOnlies = departmentRepository.findByNativeQueryAnother(1);
-		List<NameOnly> list = new ArrayList<>();
-		for (AnotherNameOnly anotherNameOnly : anotherNameOnlies) {
-			NameOnly nameOnly = new NameOnly();
-			nameOnly.setProduct_name("Object " + anotherNameOnly.getProdName());
-			nameOnly.setProduct_desc("Object " + anotherNameOnly.getProdDesc());
-			list.add(nameOnly);
-		}
-		return list;
-	}
+	// @GetMapping("/test2")
+	// public List<NameOnly> checkNamedRep2o() {
+	// 	List<AnotherNameOnly> anotherNameOnlies = departmentRepository.findByNativeQueryAnother(1);
+	// 	List<NameOnly> list = new ArrayList<>();
+	// 	for (AnotherNameOnly anotherNameOnly : anotherNameOnlies) {
+	// 		NameOnly nameOnly = new NameOnly();
+	// 		nameOnly.setProduct_name("Object " + anotherNameOnly.getProdName());
+	// 		nameOnly.setProduct_desc("Object " + anotherNameOnly.getProdDesc());
+	// 		list.add(nameOnly);
+	// 	}
+	// 	return list;
+	// }
 
 }
