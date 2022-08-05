@@ -4,7 +4,7 @@ server:
 spring:
   profiles:
     active: qa
-    
+
 ---
 
 spring:
@@ -21,7 +21,7 @@ spring:
     activate:
       on-profile: dev
 welcome:
-  message: Welcome
+  message: Welcome from dev
   
 management:
   endpoints:
@@ -47,7 +47,7 @@ spring:
     activate:
       on-profile: qa
 welcome:
-  message: Welcome
+  message: Welcome from QA
 
 #management:
 #  endpoints:
@@ -72,4 +72,4 @@ spring:
     activate:
       on-profile: prod
 welcome:
-  message: Welcome
+  message: Welcome from PROD
