@@ -3,8 +3,10 @@ package com.example.demo.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.demo.dto.AsyncDTO;
 import com.example.demo.service.CallBack;
@@ -15,23 +17,23 @@ public class AsyncServiceImpl {
 
 	public List<AsyncDTO> slowTest() throws InterruptedException {
 		List<AsyncDTO> asyncDTOs = new ArrayList<AsyncDTO>();
-		Thread[] ts = new Thread[] { new Thread(() -> {
-			run("/slow", (response) -> {
-				asyncDTOs.add((AsyncDTO) response);
-			});
-		}), new Thread(() -> {
-			run("/slow1", new CallBack() {
-
-				@Override
-				public void getCallBack(Object response) {
-					asyncDTOs.add((AsyncDTO) response);
-				}
-			});
-		}) };
-		for (Thread t : ts) {
-			t.start();
-		}
 		try {
+			Thread[] ts = new Thread[] { new Thread(() -> {
+				run("/slow", (response) -> {
+					asyncDTOs.add((AsyncDTO) response);
+				});
+			}), new Thread(() -> {
+				run("/slow1", new CallBack() {
+					@Override
+					public void getCallBack(Object response) {
+						asyncDTOs.add((AsyncDTO) response);
+					}
+				});
+			}) };
+			for (Thread t : ts) {
+				t.start();
+			}
+
 			for (Thread t : ts) {
 				t.join();
 			}
@@ -48,7 +50,7 @@ public class AsyncServiceImpl {
 			AsyncDTO response = restTemplate.getForObject(GlobalProperties.URL + endpoint, AsyncDTO.class);
 			callBack.getCallBack(response);
 		} catch (Exception ex) {
-			System.out.println(ex.getMessage());
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
