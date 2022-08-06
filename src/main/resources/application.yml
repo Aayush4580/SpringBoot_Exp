@@ -11,17 +11,20 @@ spring:
   datasource:
     driver-class-name: org.h2.Driver
     password: 
-    url: jdbc:h2:~/test
+    url: jdbc:h2:~/test;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE;AUTO_SERVER=TRUE
     username: sa
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
   config:
     activate:
       on-profile: dev
 welcome:
   message: Welcome from dev
+domain:
+  url: http://localhost:8080
   
 management:
   endpoints:
@@ -37,17 +40,20 @@ spring:
   datasource:
     driver-class-name: org.h2.Driver
     password: 
-    url: jdbc:h2:~/test
+    url: jdbc:h2:~/test;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE;AUTO_SERVER=TRUE
     username: sa
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
   config:
     activate:
       on-profile: qa
 welcome:
   message: Welcome from QA
+domain:
+  url: http://localhost:8080
 
 #management:
 #  endpoints:
@@ -62,14 +68,17 @@ spring:
   datasource:
     driver-class-name: org.h2.Driver
     password: 
-    url: jdbc:h2:~/test
+    url: jdbc:h2:~/test;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE;AUTO_SERVER=TRUE
     username: sa
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
   config:
     activate:
       on-profile: prod
 welcome:
   message: Welcome from PROD
+domain:
+  url: http://localhost:8080
