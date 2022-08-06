@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,12 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.demo.dto.AnotherNameOnly;
-import com.example.demo.dto.NameOnly;
 import com.example.demo.dto.RunCreateTemplateDTO;
-import com.example.demo.dto.SegmentRefData;
 import com.example.demo.dto.SegmentResult;
-import com.example.demo.repository.DepartmentRepository;
 
 @RestController
 @CrossOrigin
@@ -34,15 +29,15 @@ public class HomeController {
 		return "server up";
 	}
 
-	@GetMapping("/createTemplate1")
-	public List<SegmentRefData> createTemplateData() throws Exception {
+	@GetMapping("/createTemplate")
+	public List<RunCreateTemplateDTO> createTemplateData() throws Exception {
 		try {
-			List<SegmentRefData> segmentRefDatas = getSegmentRefData();
+			List<RunCreateTemplateDTO> segmentRefDatas = getSegmentRefData();
 			List<SegmentResult> segmentResults = getSegmentResult();
-			for (SegmentRefData refData : segmentRefDatas) {
+			for (RunCreateTemplateDTO refData : segmentRefDatas) {
 				List<String> list = new ArrayList<String>();
 				for (SegmentResult result : segmentResults) {
-					if (refData.getSegmentName().equalsIgnoreCase(result.getSegmentName())) {
+					if (refData.getSegmentTitle().equalsIgnoreCase(result.getSegmentName())) {
 						list.add(result.getMdlParameters() + " rank: " + result.getRank());
 					}
 				}
@@ -55,11 +50,16 @@ public class HomeController {
 		}
 	}
 
-	private static List<SegmentRefData> getSegmentRefData() {
-		List<SegmentRefData> segmentResults = new ArrayList<SegmentRefData>();
-		segmentResults.add(new SegmentRefData("NON_LEGAL_CARD", new ArrayList<>()));
-		segmentResults.add(new SegmentRefData("NON_LEGAL_WHOLESALE", new ArrayList<>()));
-
+	private static List<RunCreateTemplateDTO> getSegmentRefData() {
+		List<RunCreateTemplateDTO> segmentResults = new ArrayList<RunCreateTemplateDTO>();
+		segmentResults.add(RunCreateTemplateDTO.builder().segmentTitle("NON_LEGAL_WHOLESALE").regressionVal("")
+				.defaultSegment("data").data(new RunCreateTemplateDTO.CheckBox(true, false))
+				.business(new RunCreateTemplateDTO.CheckBox(false, false)).build());
+		RunCreateTemplateDTO.CheckBox regressionCheckbox = new RunCreateTemplateDTO.CheckBox();
+		regressionCheckbox.setChecked(true);
+		regressionCheckbox.setIsDisable(true);
+		segmentResults.add(
+				RunCreateTemplateDTO.builder().segmentTitle("NON_LEGAL_CARD").regression(regressionCheckbox).build());
 		return segmentResults;
 	}
 
@@ -78,31 +78,6 @@ public class HomeController {
 		return segmentResults;
 	}
 
-	@GetMapping("/createTemplate")
-	public List<RunCreateTemplateDTO> createTemplate() {
-		List<RunCreateTemplateDTO> createTemplateDTOs = new ArrayList<RunCreateTemplateDTO>();
-		RunCreateTemplateDTO createTemplateDTO = new RunCreateTemplateDTO();
-		createTemplateDTO.setRegressionVal("");
-		createTemplateDTO.setDefaultSegment("data");
-		createTemplateDTO.setData(new RunCreateTemplateDTO.CheckBox(true, false));
-		createTemplateDTO.setBusiness(new RunCreateTemplateDTO.CheckBox(false, false));
-		RunCreateTemplateDTO.CheckBox regressionCheckbox = new RunCreateTemplateDTO.CheckBox();
-		regressionCheckbox.setChecked(true);
-		regressionCheckbox.setIsDisable(true);
-		createTemplateDTO.setRegression(regressionCheckbox);
-		createTemplateDTOs.add(createTemplateDTO);
-		RunCreateTemplateDTO createTemplateDTO1 = new RunCreateTemplateDTO();
-		createTemplateDTO1.setRegressionVal("");
-		createTemplateDTO1.setDefaultSegment("business");
-		createTemplateDTO1.setData(new RunCreateTemplateDTO.CheckBox(true, false));
-		createTemplateDTO1.setBusiness(new RunCreateTemplateDTO.CheckBox(false, false));
-
-		createTemplateDTO1.setRegression(new RunCreateTemplateDTO.CheckBox(false, false));
-		createTemplateDTOs.add(createTemplateDTO1);
-
-		return createTemplateDTOs;
-	}
-
 //	@GetMapping("/test")
 //	public NameOnly checkNamedRepo() {
 //		NameOnly obj = departmentRepository.findByNativeQuery(1);
@@ -113,15 +88,16 @@ public class HomeController {
 
 	// @GetMapping("/test2")
 	// public List<NameOnly> checkNamedRep2o() {
-	// 	List<AnotherNameOnly> anotherNameOnlies = departmentRepository.findByNativeQueryAnother(1);
-	// 	List<NameOnly> list = new ArrayList<>();
-	// 	for (AnotherNameOnly anotherNameOnly : anotherNameOnlies) {
-	// 		NameOnly nameOnly = new NameOnly();
-	// 		nameOnly.setProduct_name("Object " + anotherNameOnly.getProdName());
-	// 		nameOnly.setProduct_desc("Object " + anotherNameOnly.getProdDesc());
-	// 		list.add(nameOnly);
-	// 	}
-	// 	return list;
+	// List<AnotherNameOnly> anotherNameOnlies =
+	// departmentRepository.findByNativeQueryAnother(1);
+	// List<NameOnly> list = new ArrayList<>();
+	// for (AnotherNameOnly anotherNameOnly : anotherNameOnlies) {
+	// NameOnly nameOnly = new NameOnly();
+	// nameOnly.setProduct_name("Object " + anotherNameOnly.getProdName());
+	// nameOnly.setProduct_desc("Object " + anotherNameOnly.getProdDesc());
+	// list.add(nameOnly);
+	// }
+	// return list;
 	// }
 
 }
