@@ -1,5 +1,8 @@
 package com.example.demo.controller;
 
+import java.security.Principal;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +30,9 @@ public class UserController {
 	// Can be only accessed by ROLE_USER
 	@GetMapping("/test")
 	@PreAuthorize("hasAuthority('ROLE_USER')")
-	public String getUserData() {
-		return "user can only access this !";
+	public List<String> getUserData(Principal principal) {
+		List<String> activeRoles = userService.getRolesByLoggedInUser(principal);
+		return activeRoles;
 	}
+
 }
