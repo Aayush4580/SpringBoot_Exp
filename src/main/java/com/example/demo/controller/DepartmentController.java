@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api")
 @CrossOrigin
 public class DepartmentController {
-	// http://localhost:8080/swagger-ui/index.html#/
+
 	@Autowired
 	private DepartmentService departmentService;
 

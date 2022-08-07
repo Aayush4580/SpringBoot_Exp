@@ -25,14 +25,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			// other public endpoints
 			"**/h2-console/**", "/user/add" };
 
+	// AUTHENTICATION
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService);
 	}
 
+	// AUTHORISATION
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable();
+		http.headers().frameOptions().sameOrigin(); // this will enable the h2-console
 		http.authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll().and().authorizeRequests()
 				.antMatchers("/user/**", "/post/**").authenticated().and().httpBasic();
 	}

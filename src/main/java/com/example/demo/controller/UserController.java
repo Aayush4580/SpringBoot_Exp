@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,5 +22,12 @@ public class UserController {
 	public String joinGroup(@RequestBody User user) {
 		userService.saveUser(user);
 		return "Hi " + user.getUserName() + " welcome to group !";
+	}
+
+	// Can be only accessed by ROLE_USER
+	@GetMapping("/test")
+	@PreAuthorize("hasAuthority('ROLE_USER')")
+	public String getUserData() {
+		return "user can only access this !";
 	}
 }

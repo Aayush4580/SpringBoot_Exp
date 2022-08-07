@@ -17,7 +17,7 @@ import com.example.demo.service.UserService;
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-	private static final String default_role = "USER_ROLE";
+	private static final String default_role = "ROLE_USER";
 
 	@Autowired
 	private UserRepository userRepository;
