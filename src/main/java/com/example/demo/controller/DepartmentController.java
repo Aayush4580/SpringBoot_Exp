@@ -46,7 +46,6 @@ public class DepartmentController {
 //	public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
 //		if (ExcelHelper.checkExcelFormat(file)) {
 //			ProductExcelProcessState excelProcessState = productService.saveExcel(file);
-//			System.out.println("exprocess State >>> ");
 //			Map<String, String> map = new HashMap<String, String>();
 //			map.put("excelProcessId", excelProcessState.getProcessId().toString());
 //			map.put("message", "Please request with the processId to get the updated status");
