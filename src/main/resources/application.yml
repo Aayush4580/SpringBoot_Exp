@@ -42,6 +42,8 @@ spring:
     password: 
     url: jdbc:h2:~/test;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE;AUTO_SERVER=TRUE
     username: sa
+    initialization-mode: always
+#    added to run data.sql on load
   jpa:
     hibernate:
       ddl-auto: update
