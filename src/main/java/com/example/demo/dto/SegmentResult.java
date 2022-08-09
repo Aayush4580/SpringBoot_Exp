@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SegmentResult {
+public class SegmentResult implements ResponseDTO {
 	private Integer snapId;
 	private String segmentName;
 	private String mdlName;

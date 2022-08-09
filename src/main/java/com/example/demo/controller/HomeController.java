@@ -8,12 +8,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.demo.dto.ResponseDTO;
 import com.example.demo.dto.RunCreateTemplateDTO;
 import com.example.demo.dto.SegmentResult;
+import com.example.demo.dto.SegmentResultDTO;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @CrossOrigin
 public class HomeController {
@@ -27,6 +33,33 @@ public class HomeController {
 	@GetMapping("/")
 	public String serverUp() throws Exception {
 		return "server up";
+	}
+
+	@GetMapping(value = "/template")
+	public ResponseDTO details(@RequestParam("type") String type) {
+		log.info("inside controller");
+		try {
+			System.out.println("type >> " + type);
+			switch (type) {
+			case "A":
+				return getResultList(); // list
+			case "B":
+				return getResult(); // object
+			default:
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+			}
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	private SegmentResult getResult() {
+		return new SegmentResult();
+	}
+
+	private SegmentResultDTO getResultList() {
+		List<SegmentResult> list = getSegmentResult();
+		return new SegmentResultDTO(list);
 	}
 
 	@GetMapping("/createTemplate")
