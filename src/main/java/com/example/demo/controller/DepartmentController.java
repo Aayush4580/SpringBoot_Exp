@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,11 +90,13 @@ public class DepartmentController {
 
 	@DeleteMapping("/department/{id}")
 	public String deletehDepartmentById(@PathVariable("id") Long id) {
+		log.info(">>>>> delete called >>>> ");
 		try {
 			departmentService.deleteDepartmentById(id);
 			return "deparment deleted successfully";
 		} catch (Exception ex) {
-			return "id not found";
+			log.info("inside catch block");
+			throw new EntityNotFoundException("not found with id " + id);
 		}
 
 	}
