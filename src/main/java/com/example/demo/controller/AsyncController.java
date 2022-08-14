@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,5 +32,32 @@ public class AsyncController {
 		// and return response based on the max time taken api. that is 2 sec
 		AsyncServiceImpl asyncServiceImpl = new AsyncServiceImpl();
 		return asyncServiceImpl.slowTest();
+	}
+
+	@GetMapping("slowTest2")
+	public CompletableFuture<String> slowTest2() throws InterruptedException {
+		CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				throw new IllegalStateException(e);
+			}
+			return "Result of the asynchronous computation";
+		});
+		return future;
+	}
+
+	private void method() {
+		try {
+			AsyncServiceImpl asyncServiceImpl = new AsyncServiceImpl();
+			asyncServiceImpl.newServiceCall(2000);
+			asyncServiceImpl.newServiceCall(2000);
+			asyncServiceImpl.newServiceCall(3000);
+//			return String.format("Hello i'm response from controller", 12);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+//			return e.getMessage();
+		}
 	}
 }

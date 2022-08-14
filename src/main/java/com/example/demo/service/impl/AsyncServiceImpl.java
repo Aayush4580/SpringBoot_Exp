@@ -54,4 +54,9 @@ public class AsyncServiceImpl {
 		}
 
 	}
+
+	public AsyncDTO newServiceCall(Integer time) throws InterruptedException {
+		Thread.sleep(time);
+		return new AsyncDTO("hello");
+	}
 }

@@ -8,14 +8,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.demo.dto.AsyncDTO;
+import com.example.demo.dto.PayloadOne;
 import com.example.demo.dto.ResponseDTO;
 import com.example.demo.dto.RunCreateTemplateDTO;
 import com.example.demo.dto.SegmentResult;
 import com.example.demo.dto.SegmentResultDTO;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +38,36 @@ public class HomeController {
 
 	@GetMapping("/")
 	public String serverUp() throws Exception {
+		return "server up";
+	}
+
+	@PostMapping("/checkPayload")
+	public String checkPayload(@RequestBody Object object, @RequestParam("type") String type) throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		switch (type) {
+		case "obj":
+			try {
+				PayloadOne pojo = mapper.convertValue(object, PayloadOne.class);
+				System.out.println("pojo >>> " + pojo);
+				// business logic
+			} catch (Exception e) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+			}
+			break;
+		case "list":
+
+			try {
+				List<AsyncDTO> list = mapper.convertValue(object, new TypeReference<List<AsyncDTO>>() {
+				});
+				System.out.println("list >>> " + list);
+				// business logic
+			} catch (Exception e) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+			}
+			break;
+		default:
+			break;
+		}
 		return "server up";
 	}
 

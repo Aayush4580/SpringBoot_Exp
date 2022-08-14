@@ -1,7 +1,7 @@
 server:
   port: 8080
-  error:
-    include-stacktrace: ON_PARAM
+#  error:
+#    include-stacktrace: ON_PARAM
 #this will remove the stack trace from enpoint response if there's an exception
 #by default it stays as ALWAYS
 spring:
