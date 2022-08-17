@@ -35,29 +35,21 @@ public class AsyncController {
 	}
 
 	@GetMapping("slowTest2")
-	public CompletableFuture<String> slowTest2() throws InterruptedException {
-		CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+	public CompletableFuture<String> slowTest2() throws Exception {
+		AsyncServiceImpl asyncServiceImpl = new AsyncServiceImpl();
+		return CompletableFuture.supplyAsync(() -> {
 			try {
-				Thread.sleep(2000);
+				asyncServiceImpl.newServiceCall(2000);
+				asyncServiceImpl.newServiceCall(2000);
+				asyncServiceImpl.newServiceCall(3000);
+				return "Result of the asynchronous computation";
 			} catch (InterruptedException e) {
-				throw new IllegalStateException(e);
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return e.getMessage();
 			}
-			return "Result of the asynchronous computation";
+
 		});
-		return future;
 	}
 
-	private void method() {
-		try {
-			AsyncServiceImpl asyncServiceImpl = new AsyncServiceImpl();
-			asyncServiceImpl.newServiceCall(2000);
-			asyncServiceImpl.newServiceCall(2000);
-			asyncServiceImpl.newServiceCall(3000);
-//			return String.format("Hello i'm response from controller", 12);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-//			return e.getMessage();
-		}
-	}
 }
