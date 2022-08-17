@@ -20,4 +20,6 @@ public interface DepartmentService {
 
 	public Department fetchDepartmentByName(String name);
 
+	List<Department> getDepartment(String code, String departmentName, String board);
+
 }

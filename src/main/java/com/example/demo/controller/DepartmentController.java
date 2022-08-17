@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Department;
@@ -66,6 +67,13 @@ public class DepartmentController {
 	public String saveDepartment(@Valid @RequestBody DepartmentReqBody department) {
 		log.info("inside save department method");
 		return departmentService.saveDepartment(department);
+	}
+
+	@GetMapping("/getDepartment")
+	public List<Department> getDepartment(@RequestParam("code") String code,
+			@RequestParam("departmentName") String departmentName, @RequestParam("board") String board) {
+		log.info("inside save department method");
+		return departmentService.getDepartment(code, departmentName, board.toUpperCase());
 	}
 
 	@GetMapping("/department")

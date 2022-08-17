@@ -95,4 +95,11 @@ public class DepartmentServiceImpl implements DepartmentService {
 		return boardDTOs;
 	}
 
+	@Override
+	public List<Department> getDepartment(String code, String departmentName, String board) {
+		// TODO Auto-generated method stub
+
+		return departmentRepository.findByDepartmentCodeAndDepartmentNameAndBoard(code, departmentName, board);
+	}
+
 }

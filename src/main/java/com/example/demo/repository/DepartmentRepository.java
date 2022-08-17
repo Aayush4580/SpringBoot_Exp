@@ -27,4 +27,7 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
 	@Query(value = "SELECT PRODUCT_DESC prodDesc, PRODUCT_NAME prodName  FROM PRODUCT where id='22637'", nativeQuery = true)
 	List<AnotherNameOnly> findByNativeQueryAnother(Integer id);
 
+	public List<Department> findByDepartmentCodeAndDepartmentNameAndBoard(String code, String departmentName,
+			String board);
+
 }
