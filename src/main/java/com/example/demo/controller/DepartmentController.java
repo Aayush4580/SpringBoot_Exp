@@ -46,6 +46,7 @@ public class DepartmentController {
 //
 //	@PostMapping("/upload")
 //	public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
+//	example upload excel exists in resource
 //		if (ExcelHelper.checkExcelFormat(file)) {
 //			ProductExcelProcessState excelProcessState = productService.saveExcel(file);
 //			Map<String, String> map = new HashMap<String, String>();
