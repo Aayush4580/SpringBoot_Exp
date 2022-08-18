@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -100,6 +101,13 @@ public class DepartmentServiceImpl implements DepartmentService {
 		// TODO Auto-generated method stub
 
 		return departmentRepository.findByDepartmentCodeAndDepartmentNameAndBoard(code, departmentName, board);
+	}
+
+	@Override
+	public List<Department> getDepartmentByPojo(Department department) {
+		Example<Department> example = Example.of(department);
+		List<Department> departments = departmentRepository.findAll(example);
+		return departments;
 	}
 
 }

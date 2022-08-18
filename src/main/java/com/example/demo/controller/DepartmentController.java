@@ -76,6 +76,18 @@ public class DepartmentController {
 		return departmentService.getDepartment(code, departmentName, board.toUpperCase());
 	}
 
+	@GetMapping("/getDepartmentByPojo")
+	public List<Department> getDepartmentByPojo() {
+		System.err.println("inside method >>>> ");
+		Department department = new Department();
+//		department.setDepartmentId(Long.parseLong("8"));
+//		department.setBoard("CBSC");
+		department.setDepartmentName("ME");
+//		department.setDepartmentCode(code);
+		System.out.println("department >> " + department);
+		return departmentService.getDepartmentByPojo(department);
+	}
+
 	@GetMapping("/department")
 	public List<Department> fetchDepartment() {
 		return departmentService.fetchDepartment();

@@ -22,4 +22,6 @@ public interface DepartmentService {
 
 	List<Department> getDepartment(String code, String departmentName, String board);
 
+	List<Department> getDepartmentByPojo(Department department);
+
 }
