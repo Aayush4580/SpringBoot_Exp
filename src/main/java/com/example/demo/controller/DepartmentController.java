@@ -65,7 +65,7 @@ public class DepartmentController {
 //	}
 
 	@PostMapping("/department")
-	public String saveDepartment(@Valid @RequestBody DepartmentReqBody department) {
+	public String saveDepartment(@RequestBody @Valid DepartmentReqBody department) {
 		log.info("inside save department method");
 		return departmentService.saveDepartment(department);
 	}

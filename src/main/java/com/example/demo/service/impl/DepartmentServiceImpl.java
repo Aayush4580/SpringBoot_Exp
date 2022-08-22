@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 	private DepartmentRepository departmentRepository;
 
 	@Override
+	@Transactional // this makes sure if there if there is any error in during multiple save it'll
+					// roll back all the data, used where multiple in save is called
 	public String saveDepartment(DepartmentReqBody departmentReqBody) {
 		// TODO Auto-generated method stub
 		List<BoardDTO> boardDTOs = boardLists();
