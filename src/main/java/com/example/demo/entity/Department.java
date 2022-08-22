@@ -16,7 +16,6 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-//@Builder // this allows to create object with any number of arguments
 @Entity
 public class Department {
 

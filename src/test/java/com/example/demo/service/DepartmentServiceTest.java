@@ -30,8 +30,11 @@ public class DepartmentServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		Department department = Department.builder().departmentName("ME").departmentAddress("Ahmedabad")
-				.departmentCode("ME-06").build();
+		Department department = new Department();
+		department.setDepartmentAddress("Ahemedabad");
+		department.setDepartmentCode("IT-06");
+		department.setDepartmentName("IT");
+		department.setDepartmentId(1l);
 
 		Mockito.when(departmentRepository.findByDepartmentNameIgnoreCase(Mockito.anyString())).thenReturn(department);
 	}
@@ -39,7 +42,7 @@ public class DepartmentServiceTest {
 	@Test
 	@DisplayName("Get Data based on department name")
 	public void findDepartmentByName() {
-		String departmentName = "ME";
+		String departmentName = "IT";
 
 		Department found = departmentService.fetchDepartmentByName(departmentName);
 		assertEquals(departmentName, found.getDepartmentName());
@@ -49,8 +52,11 @@ public class DepartmentServiceTest {
 	@DisplayName("Get all department")
 	public void fetchDepartment() {
 		List<Department> mockedList = new ArrayList<>();
-		Department department = Department.builder().departmentName("ME").departmentAddress("Ahmedabad")
-				.departmentCode("ME-06").build();
+		Department department = new Department();
+		department.setDepartmentAddress("Ahemedabad");
+		department.setDepartmentCode("IT-06");
+		department.setDepartmentName("IT");
+		department.setDepartmentId(1l);
 		mockedList.add(department);
 		Mockito.when(departmentRepository.findAll()).thenReturn(mockedList);
 		List<Department> list = departmentService.fetchDepartment();
