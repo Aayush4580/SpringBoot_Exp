@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,12 +15,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.demo.dto.AnotherNameOnly;
 import com.example.demo.dto.AsyncDTO;
+import com.example.demo.dto.NameOnly;
 import com.example.demo.dto.PayloadOne;
 import com.example.demo.dto.ResponseDTO;
 import com.example.demo.dto.RunCreateTemplateDTO;
 import com.example.demo.dto.SegmentResult;
 import com.example.demo.dto.SegmentResultDTO;
+import com.example.demo.repository.DepartmentRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,8 +37,8 @@ public class HomeController {
 	@Value("${welcome.message}")
 	private String message;
 
-	// @Autowired
-	// private DepartmentRepository departmentRepository;
+	@Autowired
+	private DepartmentRepository departmentRepository;
 
 	@GetMapping("/")
 	public String serverUp() throws Exception {
@@ -147,26 +151,17 @@ public class HomeController {
 		return segmentResults;
 	}
 
-//	@GetMapping("/test")
-//	public NameOnly checkNamedRepo() {
-//		NameOnly obj = departmentRepository.findByNativeQuery(1);
-////		ModelMapper modelMapper = new ModelMapper();
-////		NameO bookDTO = modelMapper.map(book, BookDto.class);
-//		return obj;
-//	}
-
-	// @GetMapping("/test2")
-	// public List<NameOnly> checkNamedRep2o() {
-	// List<AnotherNameOnly> anotherNameOnlies =
-	// departmentRepository.findByNativeQueryAnother(1);
-	// List<NameOnly> list = new ArrayList<>();
-	// for (AnotherNameOnly anotherNameOnly : anotherNameOnlies) {
-	// NameOnly nameOnly = new NameOnly();
-	// nameOnly.setProduct_name("Object " + anotherNameOnly.getProdName());
-	// nameOnly.setProduct_desc("Object " + anotherNameOnly.getProdDesc());
-	// list.add(nameOnly);
-	// }
-	// return list;
-	// }
+	@GetMapping("/test2")
+	public List<NameOnly> checkNamedRep2o() {
+		List<AnotherNameOnly> anotherNameOnlies = departmentRepository.findByNativeQueryAnother(1);
+		List<NameOnly> list = new ArrayList<>();
+		for (AnotherNameOnly anotherNameOnly : anotherNameOnlies) {
+			NameOnly nameOnly = new NameOnly();
+			nameOnly.setProduct_name("Object " + anotherNameOnly.getProdName());
+			nameOnly.setProduct_desc("Object " + anotherNameOnly.getProdDesc());
+			list.add(nameOnly);
+		}
+		return list;
+	}
 
 }

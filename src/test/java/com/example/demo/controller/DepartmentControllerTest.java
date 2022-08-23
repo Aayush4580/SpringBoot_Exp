@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.example.demo.entity.Department;
 import com.example.demo.entity.DepartmentReqBody;
 import com.example.demo.exception.DepartmentNotFoundException;
+import com.example.demo.repository.DepartmentRepository;
 import com.example.demo.service.DepartmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -31,13 +32,16 @@ public class DepartmentControllerTest {
 	@MockBean
 	private DepartmentService departmentService;
 
+	@MockBean
+	DepartmentRepository departmentRepository;
+
 	@BeforeEach
 	void setUp() {
 	}
 
 	@Test
 	void saveDepartment() throws Exception {
-		Department inputDepartment = new Department(1l,"Ahemedabad","IT-06","IT","CBSC");
+		Department inputDepartment = new Department(1l, "Ahemedabad", "IT-06", "IT", "CBSC");
 
 		DepartmentReqBody body = new DepartmentReqBody();
 		body.setBoardList(List.of(1, 2));
