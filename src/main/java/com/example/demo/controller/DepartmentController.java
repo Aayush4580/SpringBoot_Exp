@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import com.example.demo.entity.Department;
 import com.example.demo.entity.DepartmentReqBody;
 import com.example.demo.exception.DepartmentNotFoundException;
 import com.example.demo.service.DepartmentService;
+import com.example.demo.service.impl.ExcelHelper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +43,7 @@ public class DepartmentController {
 
 //	@Autowired
 //	private ProductExcelProcessStateService excelProcessStateService;
-////
+
 //	@Autowired
 //	private ProductService productService;
 //
@@ -64,6 +67,19 @@ public class DepartmentController {
 //		return excelProcessStateService.getProductProcessStatus(Long.parseLong(id));
 //	}
 
+	@GetMapping("/export")
+	public void exportToExcel(HttpServletResponse response) throws IOException {
+		response.setContentType("application/octet-stream");
+		String headerKey = "Content-Disposition";
+		String headervalue = "attachment; filename=Student_info.xlsx";
+
+		response.setHeader(headerKey, headervalue);
+		List<Department> departmentsList = departmentService.fetchDepartment();
+		ExcelHelper exp = new ExcelHelper();
+		exp.export(departmentsList, response);
+
+	}
+
 	@PostMapping("/department")
 	public String saveDepartment(@RequestBody @Valid DepartmentReqBody department) {
 		log.info("inside save department method");
@@ -79,7 +95,6 @@ public class DepartmentController {
 
 	@GetMapping("/getDepartmentByPojo")
 	public List<Department> getDepartmentByPojo() {
-		System.err.println("inside method >>>> ");
 		Department department = new Department();
 //		department.setDepartmentId(Long.parseLong("8"));
 //		department.setBoard("CBSC");
