@@ -36,11 +36,6 @@ public class DepartmentController {
 	@Autowired
 	private DepartmentService departmentService;
 
-//	public DepartmentController(DepartmentService departmentService) {
-//		super();
-//		this.departmentService = departmentService;
-//	}
-
 //	@Autowired
 //	private ProductExcelProcessStateService excelProcessStateService;
 
