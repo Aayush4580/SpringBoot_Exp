@@ -14,7 +14,7 @@ import com.example.demo.repository.ProductRepository;
 import com.example.demo.service.ProductService;
 
 @Service
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
 	@Autowired
 	private ProductRepository productRepository;
 	@Autowired
@@ -42,5 +42,11 @@ public class ProductServiceImpl implements ProductService{
 
 	public List<Product> getAllProducts() {
 		return this.productRepository.findAll();
+	}
+
+	@Override
+	public List<Product> get200Products() {
+		// TODO Auto-generated method stub
+		return productRepository.get200Products();
 	}
 }

@@ -19,7 +19,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.demo.entity.Department;
 import com.example.demo.entity.Product;
 
 public class ExcelHelper {
@@ -108,13 +107,15 @@ public class ExcelHelper {
 			cell.setCellValue((Integer) value);
 		} else if (value instanceof Boolean) {
 			cell.setCellValue((Boolean) value);
+		} else if (value instanceof Double) {
+			cell.setCellValue((Double) value);
 		} else {
 			cell.setCellValue((String) value);
 		}
 		cell.setCellStyle(style);
 	}
 
-	private void writeHeaderLine(List<Department> departmentList, XSSFWorkbook workbook) {
+	private void writeHeaderLine(List<Product> productList, XSSFWorkbook workbook) {
 		XSSFSheet sheet = workbook.createSheet("Student");
 
 		Row row = sheet.createRow(0);
@@ -132,35 +133,38 @@ public class ExcelHelper {
 		font.setBold(true);
 		font.setFontHeight(16);
 		style.setFont(font);
-		createCell(sheet, row, 0, "Department Id", style);
-		createCell(sheet, row, 1, "Department Name", style);
-		createCell(sheet, row, 2, "Department Code", style);
-		createCell(sheet, row, 3, "Department Address", style);
-		createCell(sheet, row, 4, "Board", style);
+		createCell(sheet, row, 0, "Id", style);
+		createCell(sheet, row, 1, "Product Id", style);
+		createCell(sheet, row, 2, "Product Name", style);
+		createCell(sheet, row, 3, "Product Proce", style);
+//		createCell(sheet, row, 4, "Board", style);
 
 		// writeDataLines
 		int rowCount = 2;
-
+		System.err.println(" excel header created >>");
 		CellStyle style1 = workbook.createCellStyle();
 		XSSFFont font1 = workbook.createFont();
 		font1.setFontHeight(14);
 		style1.setFont(font1);
 
-		for (Department stu : departmentList) {
+		for (Product stu : productList) {
+
 			Row row1 = sheet.createRow(rowCount++);
 			int columnCount = 0;
-			createCell(sheet, row1, columnCount++, stu.getDepartmentId(), style1);
-			createCell(sheet, row1, columnCount++, stu.getDepartmentName(), style1);
-			createCell(sheet, row1, columnCount++, stu.getDepartmentCode(), style1);
-			createCell(sheet, row1, columnCount++, stu.getDepartmentAddress(), style1);
-			createCell(sheet, row1, columnCount++, stu.getBoard(), style1);
+			System.err.println("row number  >> " + rowCount);
+			createCell(sheet, row1, columnCount++, stu.getId(), style1);
+			createCell(sheet, row1, columnCount++, stu.getProductId(), style1);
+			createCell(sheet, row1, columnCount++, stu.getProductName(), style1);
+			createCell(sheet, row1, columnCount++, stu.getProductPrice(), style1);
+//			createCell(sheet, row1, columnCount++, stu.getBoard(), style1);
 		}
 
 	}
 
-	public void export(List<Department> listStudent, HttpServletResponse response) throws IOException {
+	public void export(List<Product> productList, HttpServletResponse response) throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
-		writeHeaderLine(listStudent, workbook);
+		System.err.println("inside excel helper >>");
+		writeHeaderLine(productList, workbook);
 
 		ServletOutputStream outputStream = response.getOutputStream();
 		workbook.write(outputStream);

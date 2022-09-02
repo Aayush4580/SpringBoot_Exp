@@ -7,6 +7,11 @@ server:
 spring:
   profiles:
     active: qa
+    
+  servlet:
+    multipart:
+      max-file-size: 100000000MB
+      max-request-size: 100000000MB
 
 ---
 

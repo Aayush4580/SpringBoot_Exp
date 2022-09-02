@@ -8,6 +8,9 @@ import com.example.demo.entity.Product;
 import com.example.demo.entity.ProductExcelProcessState;
 
 public interface ProductService {
-    ProductExcelProcessState saveExcel(MultipartFile file);
-    List<Product> getAllProducts();
+	ProductExcelProcessState saveExcel(MultipartFile file);
+
+	List<Product> getAllProducts();
+
+	List<Product> get200Products();
 }
