@@ -14,6 +14,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 	@Query("SELECT new com.example.demo.dto.NameOnlyDTO(p.productDesc,p.productName )FROM Product p where p.id='22635'")
 	NameOnlyDTO findByNativeQuery(Integer id);
 
-	@Query(value = "SELECT * FROM PRODUCT limit 500", nativeQuery = true)
+	@Query(value = "SELECT * FROM PRODUCT limit 200", nativeQuery = true)
 	List<Product> get200Products();
 }
