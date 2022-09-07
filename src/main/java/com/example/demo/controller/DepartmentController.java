@@ -11,6 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -33,8 +37,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.example.demo.dto.NameOnlyDTO;
+import com.example.demo.dto.ProgressCallable;
 import com.example.demo.entity.Department;
 import com.example.demo.entity.DepartmentReqBody;
 import com.example.demo.entity.Product;
@@ -49,6 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api")
+//@CrossOrigin("*")
 public class DepartmentController {
 	// http://localhost:8080/swagger-ui/index.html#/
 	@Autowired
@@ -59,7 +66,7 @@ public class DepartmentController {
 	private ProductRepository productRepository;
 //	@Autowired
 //	private ProductExcelProcessStateService excelProcessStateService;
-
+	private Map<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
 //	@Autowired
 //	private ProductService productService;
 //
@@ -83,19 +90,68 @@ public class DepartmentController {
 //		return excelProcessStateService.getProductProcessStatus(Long.parseLong(id));
 //	}
 
-	@GetMapping("/export")
-	public void exportToExcel(HttpServletResponse response) throws IOException {
-		response.setContentType("application/octet-stream");
-		String headerKey = "Content-Disposition";
-		String headervalue = "attachment; filename=Student_info.xlsx";
+	@GetMapping("/export/{guid}")
+	public void exportToExcel(@PathVariable("guid") String guid, HttpServletResponse response) throws IOException {
+		System.err.println("inside with guid >>> " + guid);
+		SseEmitter sseEmitter = sseEmitters.get(guid);
+		try {
+			response.setContentType("application/octet-stream");
+			String headerKey = "Content-Disposition";
+			String headervalue = "attachment; filename=Student_info.xlsx";
 
-		response.setHeader(headerKey, headervalue);
-//		List<Product> products = productService.getAllProducts();
-		List<Product> products = productService.get200Products();
-//		System.err.println("products " + products);
-		ExcelHelper exp = new ExcelHelper();
-		exp.export(products, response);
+			response.setHeader(headerKey, headervalue);
+			List<Product> products = productService.get200Products();
+			ExcelHelper exp = new ExcelHelper();
+			exp.export(products, response, new ProgressCallable() {
+				@Override
+				public void onProgess(int percentage) throws IOException {
+					System.err.println("percentage >> " + percentage);
+					if (percentage < 100) {
+						sseEmitter.send(SseEmitter.event().name(guid).data(percentage));
+					} else {
+						sseEmitter.send(SseEmitter.event().name(guid).data(100));
+						sseEmitters.remove(guid);
+					}
+				}
+			});
+		} catch (IOException e) {
+			sseEmitter.completeWithError(e);
+		}
+	}
 
+	@GetMapping("/progress")
+	public SseEmitter eventEmitter() throws IOException {
+		SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
+		UUID guid = UUID.randomUUID();
+		sseEmitters.put(guid.toString(), sseEmitter);
+		sseEmitter.send(SseEmitter.event().name("TEST_SSE").data(guid));
+		sseEmitter.onCompletion(() -> sseEmitters.remove(guid.toString()));
+		sseEmitter.onTimeout(() -> sseEmitters.remove(guid.toString()));
+		return sseEmitter;
+	}
+
+	@GetMapping("/testSSE/{guid}")
+	public ResponseEntity<String> testSSE(@PathVariable("guid") String guid) throws IOException {
+		System.err.println("inside method with guid >> " + guid);
+		String message = "";
+		SseEmitter sseEmitter = sseEmitters.get(guid);
+		try {
+			int uploadPercentage = 0;
+			for (int i = 0; i <= 10; i++) {
+				uploadPercentage = i;
+				Thread.sleep(1000);
+				System.err.println("upload percentage >>> " + uploadPercentage);
+				sseEmitter.send(SseEmitter.event().name(guid).data(uploadPercentage));
+			}
+
+			sseEmitters.remove(guid);
+			message = "Uploaded the file successfull:";
+			return ResponseEntity.status(HttpStatus.OK).body(message);
+		} catch (Exception e) {
+			message = "Could not upload the file:";
+			sseEmitters.remove(guid);
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
+		}
 	}
 
 	// define a location

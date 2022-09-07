@@ -19,6 +19,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.dto.ProgressCallable;
 import com.example.demo.entity.Product;
 
 public class ExcelHelper {
@@ -115,7 +116,8 @@ public class ExcelHelper {
 		cell.setCellStyle(style);
 	}
 
-	private void writeHeaderLine(List<Product> productList, XSSFWorkbook workbook) {
+	private void writeHeaderLine(List<Product> productList, XSSFWorkbook workbook, ProgressCallable callable)
+			throws IOException {
 		XSSFSheet sheet = workbook.createSheet("Student");
 
 		Row row = sheet.createRow(0);
@@ -139,6 +141,8 @@ public class ExcelHelper {
 		createCell(sheet, row, 3, "Product Proce", style);
 //		createCell(sheet, row, 4, "Board", style);
 
+		float percentage = 0;
+
 		// writeDataLines
 		int rowCount = 2;
 		System.err.println(" excel header created >>");
@@ -147,11 +151,15 @@ public class ExcelHelper {
 		font1.setFontHeight(14);
 		style1.setFont(font1);
 
+		float totalSize = productList.size();
+
 		for (Product stu : productList) {
 
 			Row row1 = sheet.createRow(rowCount++);
 			int columnCount = 0;
-			System.err.println("row number  >> " + rowCount);
+
+			percentage = (rowCount / totalSize) * 100;
+			callable.onProgess((int) percentage);
 			createCell(sheet, row1, columnCount++, stu.getId(), style1);
 			createCell(sheet, row1, columnCount++, stu.getProductId(), style1);
 			createCell(sheet, row1, columnCount++, stu.getProductName(), style1);
@@ -161,10 +169,11 @@ public class ExcelHelper {
 
 	}
 
-	public void export(List<Product> productList, HttpServletResponse response) throws IOException {
+	public void export(List<Product> productList, HttpServletResponse response, ProgressCallable callable)
+			throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		System.err.println("inside excel helper >>");
-		writeHeaderLine(productList, workbook);
+		writeHeaderLine(productList, workbook, callable);
 
 		ServletOutputStream outputStream = response.getOutputStream();
 		workbook.write(outputStream);
