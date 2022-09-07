@@ -1,7 +1,11 @@
 package com.example.demo.service.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -145,7 +149,7 @@ public class ExcelHelper {
 
 		// writeDataLines
 		int rowCount = 2;
-		System.err.println(" excel header created >>");
+
 		CellStyle style1 = workbook.createCellStyle();
 		XSSFFont font1 = workbook.createFont();
 		font1.setFontHeight(14);
@@ -179,6 +183,45 @@ public class ExcelHelper {
 		workbook.write(outputStream);
 		workbook.close();
 		outputStream.close();
+	}
+
+	public ArrayList<File> exportMultiple(List<Product> productList, String DIRECTORY) throws IOException {
+		System.err.println("directory >> " + DIRECTORY);
+		String pathName = DIRECTORY + "temp_excel";
+		System.err.println("pathname >> " + pathName);
+		File file = new File(pathName);
+		if (Files.exists(Paths.get(pathName))) {
+			file.delete();
+		}
+		file.mkdir();
+		ArrayList<File> files = new ArrayList<>(2);
+		for (int i = 0; i < 3; i++) {
+			String fileName = "Excel" + (i + 1) + ".xlsx";
+			// creating excel with db list and placing them in directory
+			export(productList, pathName, fileName);
+//			String absolutePath = pathName + File.separator + fileName;
+//			System.err.println("absolutePath >>> " + absolutePath);
+			// picking up those from the directory and adding them in file-list
+			files.add(new File(pathName, fileName));
+		}
+		return files;
+
+	}
+
+	public void export(List<Product> productList, String pathName, String fileName) throws IOException {
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		writeHeaderLine(productList, workbook, new ProgressCallable() {
+
+			@Override
+			public void onProgess(int percentage) throws IOException {
+				// TODO Auto-generated method stub
+			}
+		});
+
+		FileOutputStream fout = new FileOutputStream(new File(pathName, fileName));
+		workbook.write(fout);
+		workbook.close();
+		fout.close();
 	}
 
 }

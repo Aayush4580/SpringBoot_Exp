@@ -5,20 +5,30 @@ import static java.nio.file.Paths.get;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -49,6 +59,7 @@ import com.example.demo.repository.ProductRepository;
 import com.example.demo.service.DepartmentService;
 import com.example.demo.service.ProductService;
 import com.example.demo.service.impl.ExcelHelper;
+import com.example.demo.util.Util;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,6 +78,7 @@ public class DepartmentController {
 //	@Autowired
 //	private ProductExcelProcessStateService excelProcessStateService;
 	private Map<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
+	public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
 //	@Autowired
 //	private ProductService productService;
 //
@@ -190,6 +202,57 @@ public class DepartmentController {
 		Thread.sleep(1000);
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
 				.headers(httpHeaders).body(resource);
+	}
+
+	@RequestMapping(value = "/zip", produces = "application/zip")
+	public void zipFiles(HttpServletResponse response) throws IOException {
+
+		// setting headers
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.addHeader("Content-Disposition", "attachment; filename=\"test.zip\"");
+
+		ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
+
+		// create a list to add files to be zipped
+		List<Product> products = productService.get200Products();
+		ExcelHelper exp = new ExcelHelper();
+
+		ArrayList<File> files = exp.exportMultiple(products, TEMP_DIRECTORY);
+		// package files
+		for (File file : files) {
+			// new zip entry and copying inputstream with file to zipOutputStream, after all
+			// closing streams
+			zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
+			FileInputStream fileInputStream = new FileInputStream(file);
+
+			IOUtils.copy(fileInputStream, zipOutputStream);
+
+			fileInputStream.close();
+			zipOutputStream.closeEntry();
+		}
+
+		zipOutputStream.close();
+		String pathName = TEMP_DIRECTORY + "temp_excel";
+		File file = new File(pathName);
+		System.err.println("file after zip >> " + file);
+		if (Files.exists(Paths.get(pathName))) {
+			Util.deleteDir(file);
+		}
+	}
+
+	@GetMapping("createExcelInFolder")
+	public void createExcelInFolder(HttpServletResponse response) throws FileNotFoundException, IOException {
+		// creating an instance of Workbook class
+		Workbook wb = new HSSFWorkbook();
+		// creates an excel file at the specified location
+
+		File file = new File(DIRECTORY);
+		if (!Files.exists(Paths.get(DIRECTORY))) {
+			file.mkdir();
+		}
+		OutputStream fileOut = new FileOutputStream(DIRECTORY + "BankStatement1.xlsx");
+		System.out.println("Excel File has been created successfully.");
+		wb.write(fileOut);
 	}
 
 	@PostMapping("/department")
