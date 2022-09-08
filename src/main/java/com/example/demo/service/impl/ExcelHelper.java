@@ -194,7 +194,7 @@ public class ExcelHelper {
 			file.delete();
 		}
 		file.mkdir();
-		ArrayList<File> files = new ArrayList<>(2);
+		ArrayList<File> files = new ArrayList<>();
 		for (int i = 0; i < 3; i++) {
 			String fileName = "Excel" + (i + 1) + ".xlsx";
 			// creating excel with db list and placing them in directory
