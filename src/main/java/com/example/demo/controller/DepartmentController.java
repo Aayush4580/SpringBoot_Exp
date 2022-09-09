@@ -242,17 +242,16 @@ public class DepartmentController {
 
 	@GetMapping("createExcelInFolder")
 	public void createExcelInFolder(HttpServletResponse response) throws FileNotFoundException, IOException {
-		// creating an instance of Workbook class
-		Workbook wb = new HSSFWorkbook();
-		// creates an excel file at the specified location
-
-		File file = new File(DIRECTORY);
-		if (!Files.exists(Paths.get(DIRECTORY))) {
-			file.mkdir();
+		try (// creating an instance of Workbook class
+				Workbook wb = new HSSFWorkbook()) {
+			File file = new File(DIRECTORY);
+			if (!Files.exists(Paths.get(DIRECTORY))) {
+				file.mkdir();
+			}
+			OutputStream fileOut = new FileOutputStream(DIRECTORY + "BankStatement1.xlsx");
+			System.out.println("Excel File has been created successfully.");
+			wb.write(fileOut);
 		}
-		OutputStream fileOut = new FileOutputStream(DIRECTORY + "BankStatement1.xlsx");
-		System.out.println("Excel File has been created successfully.");
-		wb.write(fileOut);
 	}
 
 	@PostMapping("/department")
