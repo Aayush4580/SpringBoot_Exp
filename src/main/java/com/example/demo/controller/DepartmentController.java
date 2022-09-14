@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -56,6 +57,7 @@ import com.example.demo.entity.DepartmentReqBody;
 import com.example.demo.entity.Product;
 import com.example.demo.exception.DepartmentNotFoundException;
 import com.example.demo.repository.ProductRepository;
+import com.example.demo.service.AsyncService;
 import com.example.demo.service.DepartmentService;
 import com.example.demo.service.ProductService;
 import com.example.demo.service.impl.ExcelHelper;
@@ -73,6 +75,8 @@ public class DepartmentController {
 	private DepartmentService departmentService;
 	@Autowired
 	private ProductService productService;
+	@Autowired
+	private AsyncService asyncService;
 	@Autowired
 	private ProductRepository productRepository;
 //	@Autowired
@@ -314,6 +318,28 @@ public class DepartmentController {
 			throw new EntityNotFoundException("not found with id " + id);
 		}
 
+	}
+
+	@GetMapping("/completableTest")
+	public String completableTest() throws InterruptedException, ExecutionException {
+		long start = System.currentTimeMillis();
+		asyncService.sendReminderToEmployee().get();
+		long end = System.currentTimeMillis();
+		// finding the time difference and converting it into seconds
+		float sec = (end - start) / 1000F;
+		System.err.println("completed in >>> " + sec + " seconds");
+		return "working";
+	}
+
+	@GetMapping("/withoutTest")
+	public String withoutTest() throws InterruptedException {
+		long start = System.currentTimeMillis();
+		asyncService.withoutFutureAsync();
+		long end = System.currentTimeMillis();
+		// finding the time difference and converting it into seconds
+		float sec = (end - start) / 1000F;
+		System.err.println("completed in >>> " + sec + " seconds");
+		return "working";
 	}
 
 }
