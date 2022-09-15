@@ -1,8 +1,11 @@
 package com.example.demo.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -61,6 +64,75 @@ public class AsyncServiceImpl implements AsyncService {
 	public AsyncDTO newServiceCall(Integer time) throws InterruptedException {
 		Thread.sleep(time);
 		return new AsyncDTO("hello");
+	}
+
+	@Override
+	public List<String> concurrentAwait() throws InterruptedException, ExecutionException {
+		System.err.println("att the start of method 1 >>>>> ");
+		List<CompletableFuture<String>> completableFutures = Arrays.asList(concurrentAwait2(), concurrentAwait3());
+
+		CompletableFuture<Void> resultantCf = CompletableFuture
+				.allOf(completableFutures.toArray(new CompletableFuture[completableFutures.size()]));
+
+		CompletableFuture<List<String>> allFutureResults = resultantCf
+				.thenApply(t -> completableFutures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
+
+		List<String> strList = allFutureResults.get();
+		System.out.println("Result - " + strList);
+		System.err.println("att the end >>>>> ");
+		return strList;
+	}
+
+	public CompletableFuture<String> concurrentAwait2() throws InterruptedException, ExecutionException {
+		CompletableFuture<String> completableFuture1 = CompletableFuture.supplyAsync(() -> {
+			sleepThread(5000);
+			String stringToPrint = "Educative";
+			System.out.println("----\nsupplyAsync first future - " + stringToPrint);
+			System.out.println("Thread execution - " + Thread.currentThread().getName());
+			return stringToPrint;
+		});
+		return completableFuture1;
+	}
+
+	public CompletableFuture<String> concurrentAwait3() throws InterruptedException, ExecutionException {
+		CompletableFuture<String> completableFuture2 = CompletableFuture.supplyAsync(() -> {
+			sleepThread(3000);
+			String stringToPrint = "Edpresso";
+			System.out.println("----\nsupplyAsync second future - " + stringToPrint);
+			System.out.println("Thread execution - " + Thread.currentThread().getName());
+			return stringToPrint;
+		});
+		return completableFuture2;
+	}
+
+	@Override
+	public void asyncMethod() throws InterruptedException {
+		System.err.println("att the start of method 1 >>>>> ");
+		method2().thenAcceptAsync((str) -> {
+			System.err.println("att the end of method 2 >>>>> ");
+		});
+		method3().thenAcceptAsync((str) -> {
+			System.err.println("att the end of method 3 >>>>> ");
+		});
+		System.err.println("att the end >>>>> ");
+	}
+
+	public static CompletableFuture<String> method2() {
+		CompletableFuture<String> voidCompletableFuture = CompletableFuture.supplyAsync(() -> {
+			System.err.println("inside method 2 >>>>> " + Thread.currentThread().getName());
+			sleepThread(5000);
+			return "method 2";
+		});
+		return voidCompletableFuture;
+	}
+
+	public static CompletableFuture<String> method3() throws InterruptedException {
+		CompletableFuture<String> voidCompletableFuture = CompletableFuture.supplyAsync(() -> {
+			System.err.println("inside method 3 >>>>> " + Thread.currentThread().getName());
+			sleepThread(2000);
+			return "method 3";
+		});
+		return voidCompletableFuture;
 	}
 
 	@Override
@@ -123,11 +195,10 @@ public class AsyncServiceImpl implements AsyncService {
 		return "with out completable future";
 	}
 
-	private String sleepThread(long time) {
+	private static String sleepThread(long time) {
 		try {
 			Thread.sleep(time);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return "sleep time " + time;

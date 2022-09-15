@@ -325,7 +325,6 @@ public class DepartmentController {
 		long start = System.currentTimeMillis();
 		asyncService.sendReminderToEmployee().get();
 		long end = System.currentTimeMillis();
-		// finding the time difference and converting it into seconds
 		float sec = (end - start) / 1000F;
 		System.err.println("completed in >>> " + sec + " seconds");
 		return "working";
@@ -336,10 +335,21 @@ public class DepartmentController {
 		long start = System.currentTimeMillis();
 		asyncService.withoutFutureAsync();
 		long end = System.currentTimeMillis();
-		// finding the time difference and converting it into seconds
 		float sec = (end - start) / 1000F;
 		System.err.println("completed in >>> " + sec + " seconds");
 		return "working";
+	}
+
+	@GetMapping("/asyncMethod")
+	public String method1() throws ExecutionException, InterruptedException {
+		asyncService.asyncMethod();
+		return "working";
+	}
+
+	@GetMapping("/concurrentAwait")
+	public List<String> anotherMetjhod1() throws ExecutionException, InterruptedException {
+		List<String> str = asyncService.concurrentAwait();
+		return str;
 	}
 
 }
