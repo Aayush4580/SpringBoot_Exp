@@ -83,6 +83,7 @@ public class DepartmentController {
 //	private ProductExcelProcessStateService excelProcessStateService;
 	private Map<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
 	public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
+
 //	@Autowired
 //	private ProductService productService;
 //
@@ -105,6 +106,30 @@ public class DepartmentController {
 ////		Thread.sleep(3000);
 //		return excelProcessStateService.getProductProcessStatus(Long.parseLong(id));
 //	}
+	@GetMapping("/normalExport")
+	public void normalExportToExcel(HttpServletResponse response) throws IOException {
+		try {
+			response.setContentType("application/octet-stream");
+			String headerKey = "Content-Disposition";
+			String headervalue = "attachment; filename=Student_info.xlsx";
+
+			response.setHeader(headerKey, headervalue);
+			List<Product> products = productService.get200Products();
+			ExcelHelper exp = new ExcelHelper();
+			exp.export(products, response, new ProgressCallable() {
+				@Override
+				public void onProgess(int percentage) throws IOException {
+					System.err.println("percentage >> " + percentage);
+
+				}
+
+			});
+//			return "excel ready";
+		} catch (IOException e) {
+			e.printStackTrace();
+//			return "Error";
+		}
+	}
 
 	@GetMapping("/export/{guid}")
 	public void exportToExcel(@PathVariable("guid") String guid, HttpServletResponse response) throws IOException {
