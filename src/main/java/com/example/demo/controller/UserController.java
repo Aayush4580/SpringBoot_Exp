@@ -28,6 +28,7 @@ public class UserController {
 	}
 
 	// Can be only accessed by ROLE_USER
+	// basic auth username: Aayush pw:1234
 	@GetMapping("/test")
 	@PreAuthorize("hasAuthority('ROLE_USER')")
 	public List<String> getUserData(Principal principal) {
