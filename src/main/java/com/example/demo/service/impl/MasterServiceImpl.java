@@ -19,6 +19,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.util.Util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,7 +54,7 @@ public class MasterServiceImpl {
 		return list;
 	}
 
-	public ByteArrayInputStream downloadsFiles(List<?> objects, String fileType) throws IOException {
+	public ByteArrayInputStream downloadsFiles(List<?> objects, String fileType, String fileId) throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		List<HashMap<Object, Object>> list = getListOfObjectToListOfHashMap(objects);
 
@@ -61,7 +62,7 @@ public class MasterServiceImpl {
 		System.err.println("COLUMNs >> " + Arrays.toString(COLUMNs));
 		try {
 			if (fileType.equals("Excel")) {
-				generateExcel(list, COLUMNs, out);
+				generateExcel(list, COLUMNs, fileId, out);
 			}
 //			else if (fileType.equals("Pdf")) {
 //				generatePdf(list, COLUMNs, out);
@@ -86,7 +87,7 @@ public class MasterServiceImpl {
 		return header.split(",");
 	}
 
-	public static final void generateExcel(List<HashMap<Object, Object>> list, String[] COLUMNs,
+	public static final void generateExcel(List<HashMap<Object, Object>> list, String[] COLUMNs, String fileId,
 			ByteArrayOutputStream out) throws IOException {
 		try (Workbook workbook = new XSSFWorkbook()) {
 			Sheet sheet = workbook.createSheet("Excelshit");
@@ -98,8 +99,7 @@ public class MasterServiceImpl {
 			Row headerRow = sheet.createRow(0);
 			for (int col = 0; col < COLUMNs.length; col++) {
 				Cell cell = headerRow.createCell(col);
-				toProperCase(COLUMNs[col]);
-				cell.setCellValue(COLUMNs[col]);
+				cell.setCellValue(Util.getData(COLUMNs[col], fileId));
 				cell.setCellStyle(headerCellStyle);
 			}
 			int rowIdx = 1;
@@ -117,19 +117,6 @@ public class MasterServiceImpl {
 			}
 			workbook.write(out);
 		}
-	}
-
-	static String toProperCase(String s) {
-		String temp = s.trim();
-		String spaces = "";
-		if (temp.length() != s.length()) {
-			int startCharIndex = s.charAt(temp.indexOf(0));
-			spaces = s.substring(0, startCharIndex);
-		}
-		temp = temp.substring(0, 1).toUpperCase() + spaces + temp.substring(1).toLowerCase() + " ";
-		System.err.println("col >> " + temp);
-		return temp;
-
 	}
 
 //	private static final void generatePdf(List<HashMap<Object, Object>> list, String[] COLUMNs,

@@ -107,12 +107,12 @@ public class DepartmentController {
 //		return excelProcessStateService.getProductProcessStatus(Long.parseLong(id));
 //	}
 	@GetMapping("/normalExport")
-	public void normalExportToExcel(HttpServletResponse response) throws IOException {
+	public void normalExportToExcel(HttpServletResponse response) throws IOException, InterruptedException {
 		try {
 			response.setContentType("application/octet-stream");
 			String headerKey = "Content-Disposition";
 			String headervalue = "attachment; filename=Student_info.xlsx";
-
+			Thread.sleep(1000);
 			response.setHeader(headerKey, headervalue);
 			List<Product> products = productService.get200Products();
 			ExcelHelper exp = new ExcelHelper();

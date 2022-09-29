@@ -36,7 +36,8 @@ public class ExcelController {
 //		}
 		String fileType = "Excel";
 		String fileName = "something";
-		ByteArrayInputStream in = masterServiceImpl.downloadsFiles(objects, fileType);
+		String fileId = "department";
+		ByteArrayInputStream in = masterServiceImpl.downloadsFiles(objects, fileType, fileId);
 		HttpHeaders headers = new HttpHeaders();
 		if (fileType.equals("Excel")) {
 			headers.add("Content-Disposition", "attachment; filename=" + fileName + ".xlsx");
