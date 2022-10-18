@@ -11,9 +11,9 @@ import com.example.demo.entity.Product;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
 //	@Query("SELECT new com.example.demo.dto.NameOnlyDTO(p.PRODUCT_DESC,p.PRODUCT_NAME) FROM PRODUCT p where p.id='22635'")
-	@Query("SELECT new com.example.demo.dto.NameOnlyDTO(p.productDesc,p.productName )FROM Product p where p.id='22635'")
-	NameOnlyDTO findByNativeQuery(Integer id);
+    @Query("SELECT new com.example.demo.dto.NameOnlyDTO(p.productDesc,p.productName )FROM Product p where p.id='22635'")
+    NameOnlyDTO findByNativeQuery(Integer id);
 
-	@Query(value = "SELECT * FROM PRODUCT limit 100", nativeQuery = true)
-	List<Product> get200Products();
+    @Query(value = "SELECT * FROM PRODUCT limit 100", nativeQuery = true)
+    List<Product> get200Products();
 }

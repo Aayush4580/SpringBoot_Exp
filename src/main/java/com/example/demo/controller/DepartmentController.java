@@ -70,19 +70,19 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api")
 //@CrossOrigin("*")
 public class DepartmentController {
-	// http://localhost:8080/swagger-ui/index.html#/
-	@Autowired
-	private DepartmentService departmentService;
-	@Autowired
-	private ProductService productService;
-	@Autowired
-	private AsyncService asyncService;
-	@Autowired
-	private ProductRepository productRepository;
+    // http://localhost:8080/swagger-ui/index.html#/
+    @Autowired
+    private DepartmentService departmentService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private AsyncService asyncService;
+    @Autowired
+    private ProductRepository productRepository;
 //	@Autowired
 //	private ProductExcelProcessStateService excelProcessStateService;
-	private Map<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
-	public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
+    private Map<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
+    public static final String TEMP_DIRECTORY = System.getProperty("java.io.tmpdir");
 
 //	@Autowired
 //	private ProductService productService;
@@ -106,275 +106,275 @@ public class DepartmentController {
 ////		Thread.sleep(3000);
 //		return excelProcessStateService.getProductProcessStatus(Long.parseLong(id));
 //	}
-	@GetMapping("/normalExport")
-	public void normalExportToExcel(HttpServletResponse response) throws IOException, InterruptedException {
-		try {
-			response.setContentType("application/octet-stream");
-			String headerKey = "Content-Disposition";
-			String headervalue = "attachment; filename=Student_info.xlsx";
-			Thread.sleep(1000);
-			response.setHeader(headerKey, headervalue);
-			List<Product> products = productService.get200Products();
-			ExcelHelper exp = new ExcelHelper();
-			exp.export(products, response, new ProgressCallable() {
-				@Override
-				public void onProgess(int percentage) throws IOException {
-					System.err.println("percentage >> " + percentage);
+    @GetMapping("/normalExport")
+    public void normalExportToExcel(HttpServletResponse response) throws IOException, InterruptedException {
+        try {
+            response.setContentType("application/octet-stream");
+            String headerKey = "Content-Disposition";
+            String headervalue = "attachment; filename=Student_info.xlsx";
+            Thread.sleep(1000);
+            response.setHeader(headerKey, headervalue);
+            List<Product> products = productService.get200Products();
+            ExcelHelper exp = new ExcelHelper();
+            exp.export(products, response, new ProgressCallable() {
+                @Override
+                public void onProgess(int percentage) throws IOException {
+                    System.err.println("percentage >> " + percentage);
 
-				}
+                }
 
-			});
+            });
 //			return "excel ready";
-		} catch (IOException e) {
-			e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
 //			return "Error";
-		}
-	}
+        }
+    }
 
-	@GetMapping("/export/{guid}")
-	public void exportToExcel(@PathVariable("guid") String guid, HttpServletResponse response) throws IOException {
-		System.err.println("inside with guid >>> " + guid);
-		SseEmitter sseEmitter = sseEmitters.get(guid);
-		try {
-			response.setContentType("application/octet-stream");
-			String headerKey = "Content-Disposition";
-			String headervalue = "attachment; filename=Student_info.xlsx";
+    @GetMapping("/export/{guid}")
+    public void exportToExcel(@PathVariable("guid") String guid, HttpServletResponse response) throws IOException {
+        System.err.println("inside with guid >>> " + guid);
+        SseEmitter sseEmitter = sseEmitters.get(guid);
+        try {
+            response.setContentType("application/octet-stream");
+            String headerKey = "Content-Disposition";
+            String headervalue = "attachment; filename=Student_info.xlsx";
 
-			response.setHeader(headerKey, headervalue);
-			List<Product> products = productService.get200Products();
-			ExcelHelper exp = new ExcelHelper();
-			exp.export(products, response, new ProgressCallable() {
-				@Override
-				public void onProgess(int percentage) throws IOException {
-					System.err.println("percentage >> " + percentage);
-					if (percentage < 100) {
-						sseEmitter.send(SseEmitter.event().name(guid).data(percentage));
-					} else {
-						sseEmitter.send(SseEmitter.event().name(guid).data(100));
-						sseEmitters.remove(guid);
-					}
-				}
-			});
-		} catch (IOException e) {
-			sseEmitter.completeWithError(e);
-		}
-	}
+            response.setHeader(headerKey, headervalue);
+            List<Product> products = productService.get200Products();
+            ExcelHelper exp = new ExcelHelper();
+            exp.export(products, response, new ProgressCallable() {
+                @Override
+                public void onProgess(int percentage) throws IOException {
+                    System.err.println("percentage >> " + percentage);
+                    if (percentage < 100) {
+                        sseEmitter.send(SseEmitter.event().name(guid).data(percentage));
+                    } else {
+                        sseEmitter.send(SseEmitter.event().name(guid).data(100));
+                        sseEmitters.remove(guid);
+                    }
+                }
+            });
+        } catch (IOException e) {
+            sseEmitter.completeWithError(e);
+        }
+    }
 
-	@GetMapping("/progress")
-	public SseEmitter eventEmitter() throws IOException {
-		SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
-		UUID guid = UUID.randomUUID();
-		sseEmitters.put(guid.toString(), sseEmitter);
-		sseEmitter.send(SseEmitter.event().name("TEST_SSE").data(guid));
-		sseEmitter.onCompletion(() -> sseEmitters.remove(guid.toString()));
-		sseEmitter.onTimeout(() -> sseEmitters.remove(guid.toString()));
-		return sseEmitter;
-	}
+    @GetMapping("/progress")
+    public SseEmitter eventEmitter() throws IOException {
+        SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
+        UUID guid = UUID.randomUUID();
+        sseEmitters.put(guid.toString(), sseEmitter);
+        sseEmitter.send(SseEmitter.event().name("TEST_SSE").data(guid));
+        sseEmitter.onCompletion(() -> sseEmitters.remove(guid.toString()));
+        sseEmitter.onTimeout(() -> sseEmitters.remove(guid.toString()));
+        return sseEmitter;
+    }
 
-	@GetMapping("/testSSE/{guid}")
-	public ResponseEntity<String> testSSE(@PathVariable("guid") String guid) throws IOException {
-		System.err.println("inside method with guid >> " + guid);
-		String message = "";
-		SseEmitter sseEmitter = sseEmitters.get(guid);
-		try {
-			int uploadPercentage = 0;
-			for (int i = 0; i <= 10; i++) {
-				uploadPercentage = i;
-				Thread.sleep(1000);
-				System.err.println("upload percentage >>> " + uploadPercentage);
-				sseEmitter.send(SseEmitter.event().name(guid).data(uploadPercentage));
-			}
+    @GetMapping("/testSSE/{guid}")
+    public ResponseEntity<String> testSSE(@PathVariable("guid") String guid) throws IOException {
+        System.err.println("inside method with guid >> " + guid);
+        String message = "";
+        SseEmitter sseEmitter = sseEmitters.get(guid);
+        try {
+            int uploadPercentage = 0;
+            for (int i = 0; i <= 10; i++) {
+                uploadPercentage = i;
+                Thread.sleep(1000);
+                System.err.println("upload percentage >>> " + uploadPercentage);
+                sseEmitter.send(SseEmitter.event().name(guid).data(uploadPercentage));
+            }
 
-			sseEmitters.remove(guid);
-			message = "Uploaded the file successfull:";
-			return ResponseEntity.status(HttpStatus.OK).body(message);
-		} catch (Exception e) {
-			message = "Could not upload the file:";
-			sseEmitters.remove(guid);
-			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
-		}
-	}
+            sseEmitters.remove(guid);
+            message = "Uploaded the file successfull:";
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        } catch (Exception e) {
+            message = "Could not upload the file:";
+            sseEmitters.remove(guid);
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
+        }
+    }
 
-	// define a location
-	public static final String DIRECTORY = System.getProperty("user.home") + "/Downloads/uploads/";
+    // define a location
+    public static final String DIRECTORY = System.getProperty("user.home") + "/Downloads/uploads/";
 
-	// Define a method to upload files
-	@PostMapping("/uploadToDir")
-	public ResponseEntity<List<String>> uploadFiles(@RequestParam("files") List<MultipartFile> multipartFiles)
-			throws IOException {
-		System.err.println("inside method >>>> ");
-		List<String> filenames = new ArrayList<>();
-		System.err.println(" System.getProperty(\"user.home\") >>> " + System.getProperty("user.home"));
-		System.err.println("DIRECTORY >> " + DIRECTORY);
-		for (MultipartFile file : multipartFiles) {
-			String filename = StringUtils.cleanPath(file.getOriginalFilename());
-			Path fileStorage = get(DIRECTORY, filename).toAbsolutePath().normalize();
-			copy(file.getInputStream(), fileStorage, REPLACE_EXISTING);
-			filenames.add(filename);
-		}
-		return ResponseEntity.ok().body(filenames);
-	}
+    // Define a method to upload files
+    @PostMapping("/uploadToDir")
+    public ResponseEntity<List<String>> uploadFiles(@RequestParam("files") List<MultipartFile> multipartFiles)
+            throws IOException {
+        System.err.println("inside method >>>> ");
+        List<String> filenames = new ArrayList<>();
+        System.err.println(" System.getProperty(\"user.home\") >>> " + System.getProperty("user.home"));
+        System.err.println("DIRECTORY >> " + DIRECTORY);
+        for (MultipartFile file : multipartFiles) {
+            String filename = StringUtils.cleanPath(file.getOriginalFilename());
+            Path fileStorage = get(DIRECTORY, filename).toAbsolutePath().normalize();
+            copy(file.getInputStream(), fileStorage, REPLACE_EXISTING);
+            filenames.add(filename);
+        }
+        return ResponseEntity.ok().body(filenames);
+    }
 
-	// Define a method to download files
-	@GetMapping("downloadFromDir/{filename}")
-	public ResponseEntity<Resource> downloadFiles(@PathVariable("filename") String filename)
-			throws IOException, InterruptedException {
-		Path filePath = get(DIRECTORY).toAbsolutePath().normalize().resolve(filename);
-		if (!Files.exists(filePath)) {
-			throw new FileNotFoundException(filename + " was not found on the server");
-		}
-		Thread.sleep(1000);
-		Resource resource = new UrlResource(filePath.toUri());
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.add("File-Name", filename);
-		httpHeaders.add(CONTENT_DISPOSITION, "attachment;File-Name=" + resource.getFilename());
-		Thread.sleep(1000);
-		return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
-				.headers(httpHeaders).body(resource);
-	}
+    // Define a method to download files
+    @GetMapping("downloadFromDir/{filename}")
+    public ResponseEntity<Resource> downloadFiles(@PathVariable("filename") String filename)
+            throws IOException, InterruptedException {
+        Path filePath = get(DIRECTORY).toAbsolutePath().normalize().resolve(filename);
+        if (!Files.exists(filePath)) {
+            throw new FileNotFoundException(filename + " was not found on the server");
+        }
+        Thread.sleep(1000);
+        Resource resource = new UrlResource(filePath.toUri());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("File-Name", filename);
+        httpHeaders.add(CONTENT_DISPOSITION, "attachment;File-Name=" + resource.getFilename());
+        Thread.sleep(1000);
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
+                .headers(httpHeaders).body(resource);
+    }
 
-	@RequestMapping(value = "/zip", produces = "application/zip")
-	public void zipFiles(HttpServletResponse response) throws IOException {
+    @RequestMapping(value = "/zip", produces = "application/zip")
+    public void zipFiles(HttpServletResponse response) throws IOException {
 
-		// setting headers
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.addHeader("Content-Disposition", "attachment; filename=\"test.zip\"");
+        // setting headers
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.addHeader("Content-Disposition", "attachment; filename=\"test.zip\"");
 
-		ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
+        ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
 
-		// create a list to add files to be zipped
-		List<Product> products = productService.get200Products();
-		ExcelHelper exp = new ExcelHelper();
+        // create a list to add files to be zipped
+        List<Product> products = productService.get200Products();
+        ExcelHelper exp = new ExcelHelper();
 
-		ArrayList<File> files = exp.exportMultiple(products, TEMP_DIRECTORY);
-		// package files
-		for (File file : files) {
-			// new zip entry and copying inputstream with file to zipOutputStream, after all
-			// closing streams
-			zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
-			FileInputStream fileInputStream = new FileInputStream(file);
+        ArrayList<File> files = exp.exportMultiple(products, TEMP_DIRECTORY);
+        // package files
+        for (File file : files) {
+            // new zip entry and copying inputstream with file to zipOutputStream, after all
+            // closing streams
+            zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
+            FileInputStream fileInputStream = new FileInputStream(file);
 
-			IOUtils.copy(fileInputStream, zipOutputStream);
+            IOUtils.copy(fileInputStream, zipOutputStream);
 
-			fileInputStream.close();
-			zipOutputStream.closeEntry();
-		}
+            fileInputStream.close();
+            zipOutputStream.closeEntry();
+        }
 
-		zipOutputStream.close();
-		String pathName = TEMP_DIRECTORY + "temp_excel";
-		File file = new File(pathName);
-		System.err.println("file after zip >> " + file);
-		if (Files.exists(Paths.get(pathName))) {
-			Util.deleteDir(file);
-		}
-	}
+        zipOutputStream.close();
+        String pathName = TEMP_DIRECTORY + "temp_excel";
+        File file = new File(pathName);
+        System.err.println("file after zip >> " + file);
+        if (Files.exists(Paths.get(pathName))) {
+            Util.deleteDir(file);
+        }
+    }
 
-	@GetMapping("createExcelInFolder")
-	public void createExcelInFolder(HttpServletResponse response) throws FileNotFoundException, IOException {
-		try (// creating an instance of Workbook class
-				Workbook wb = new HSSFWorkbook()) {
-			File file = new File(DIRECTORY);
-			if (!Files.exists(Paths.get(DIRECTORY))) {
-				file.mkdir();
-			}
-			OutputStream fileOut = new FileOutputStream(DIRECTORY + "BankStatement1.xlsx");
-			System.out.println("Excel File has been created successfully.");
-			wb.write(fileOut);
-		}
-	}
+    @GetMapping("createExcelInFolder")
+    public void createExcelInFolder(HttpServletResponse response) throws FileNotFoundException, IOException {
+        try (// creating an instance of Workbook class
+                Workbook wb = new HSSFWorkbook()) {
+            File file = new File(DIRECTORY);
+            if (!Files.exists(Paths.get(DIRECTORY))) {
+                file.mkdir();
+            }
+            OutputStream fileOut = new FileOutputStream(DIRECTORY + "BankStatement1.xlsx");
+            System.out.println("Excel File has been created successfully.");
+            wb.write(fileOut);
+        }
+    }
 
-	@PostMapping("/department")
-	public String saveDepartment(@RequestBody @Valid DepartmentReqBody department) {
-		log.info("inside save department method");
-		return departmentService.saveDepartment(department);
-	}
+    @PostMapping("/department")
+    public String saveDepartment(@RequestBody @Valid DepartmentReqBody department) {
+        log.info("inside save department method");
+        return departmentService.saveDepartment(department);
+    }
 
-	@GetMapping("/getDepartment")
-	public List<Department> getDepartment(@RequestParam("code") String code,
-			@RequestParam("departmentName") String departmentName, @RequestParam("board") String board) {
-		log.info("inside save department method");
-		return departmentService.getDepartment(code, departmentName, board.toUpperCase());
-	}
+    @GetMapping("/getDepartment")
+    public List<Department> getDepartment(@RequestParam("code") String code,
+            @RequestParam("departmentName") String departmentName, @RequestParam("board") String board) {
+        log.info("inside save department method");
+        return departmentService.getDepartment(code, departmentName, board.toUpperCase());
+    }
 
-	@GetMapping("/getDepartmentByPojo")
-	public List<Department> getDepartmentByPojo() {
-		Department department = new Department();
+    @GetMapping("/getDepartmentByPojo")
+    public List<Department> getDepartmentByPojo() {
+        Department department = new Department();
 //		department.setDepartmentId(Long.parseLong("8"));
 //		department.setBoard("CBSC");
-		department.setDepartmentName("ME");
+        department.setDepartmentName("ME");
 //		department.setDepartmentCode(code);
-		System.out.println("department >> " + department);
-		return departmentService.getDepartmentByPojo(department);
-	}
+        System.out.println("department >> " + department);
+        return departmentService.getDepartmentByPojo(department);
+    }
 
-	@GetMapping("/department")
-	public List<Department> fetchDepartment() {
-		return departmentService.fetchDepartment();
-	}
+    @GetMapping("/department")
+    public List<Department> fetchDepartment() {
+        return departmentService.fetchDepartment();
+    }
 
-	@GetMapping("/department/{id}")
-	public Department fetchDepartmentById(@PathVariable("id") Long id) throws DepartmentNotFoundException {
-		return departmentService.fetchDepartmentById(id);
-	}
+    @GetMapping("/department/{id}")
+    public Department fetchDepartmentById(@PathVariable("id") Long id) throws DepartmentNotFoundException {
+        return departmentService.fetchDepartmentById(id);
+    }
 
-	@GetMapping("/department/name/{name}")
-	public Department fetchDepartmentByName(@PathVariable("name") String name) {
-		return departmentService.fetchDepartmentByName(name);
-	}
+    @GetMapping("/department/name/{name}")
+    public Department fetchDepartmentByName(@PathVariable("name") String name) {
+        return departmentService.fetchDepartmentByName(name);
+    }
 
-	@PutMapping("/department")
-	public Department updateDepartmentById(@RequestBody Department department) throws DepartmentNotFoundException {
-		return departmentService.updateDepartment(department);
-	}
+    @PutMapping("/department")
+    public Department updateDepartmentById(@RequestBody Department department) throws DepartmentNotFoundException {
+        return departmentService.updateDepartment(department);
+    }
 
-	@GetMapping("/projection")
-	public NameOnlyDTO projectionTest(@RequestBody Department department) throws DepartmentNotFoundException {
-		return productRepository.findByNativeQuery(1);
-	}
+    @GetMapping("/projection")
+    public NameOnlyDTO projectionTest(@RequestBody Department department) throws DepartmentNotFoundException {
+        return productRepository.findByNativeQuery(1);
+    }
 
-	@DeleteMapping("/department/{id}")
-	public String deletehDepartmentById(@PathVariable("id") Long id) {
-		log.info(">>>>> delete called >>>> ");
-		try {
-			departmentService.deleteDepartmentById(id);
-			return "deparment deleted successfully";
-		} catch (Exception ex) {
-			log.info("inside catch block");
-			throw new EntityNotFoundException("not found with id " + id);
-		}
+    @DeleteMapping("/department/{id}")
+    public String deletehDepartmentById(@PathVariable("id") Long id) {
+        log.info(">>>>> delete called >>>> ");
+        try {
+            departmentService.deleteDepartmentById(id);
+            return "deparment deleted successfully";
+        } catch (Exception ex) {
+            log.info("inside catch block");
+            throw new EntityNotFoundException("not found with id " + id);
+        }
 
-	}
+    }
 
-	@GetMapping("/completableTest")
-	public String completableTest() throws InterruptedException, ExecutionException {
-		long start = System.currentTimeMillis();
-		asyncService.sendReminderToEmployee().get();
-		long end = System.currentTimeMillis();
-		float sec = (end - start) / 1000F;
-		System.err.println("completed in >>> " + sec + " seconds");
-		return "working";
-	}
+    @GetMapping("/completableTest")
+    public String completableTest() throws InterruptedException, ExecutionException {
+        long start = System.currentTimeMillis();
+        asyncService.sendReminderToEmployee().get();
+        long end = System.currentTimeMillis();
+        float sec = (end - start) / 1000F;
+        System.err.println("completed in >>> " + sec + " seconds");
+        return "working";
+    }
 
-	@GetMapping("/withoutTest")
-	public String withoutTest() throws InterruptedException {
-		long start = System.currentTimeMillis();
-		asyncService.withoutFutureAsync();
-		long end = System.currentTimeMillis();
-		float sec = (end - start) / 1000F;
-		System.err.println("completed in >>> " + sec + " seconds");
-		return "working";
-	}
+    @GetMapping("/withoutTest")
+    public String withoutTest() throws InterruptedException {
+        long start = System.currentTimeMillis();
+        asyncService.withoutFutureAsync();
+        long end = System.currentTimeMillis();
+        float sec = (end - start) / 1000F;
+        System.err.println("completed in >>> " + sec + " seconds");
+        return "working";
+    }
 
-	@GetMapping("/asyncMethod")
-	public String method1() throws ExecutionException, InterruptedException {
-		asyncService.asyncMethod();
-		return "working";
-	}
+    @GetMapping("/asyncMethod")
+    public String method1() throws ExecutionException, InterruptedException {
+        asyncService.asyncMethod();
+        return "working";
+    }
 
-	@GetMapping("/concurrentAwait")
-	public List<String> anotherMetjhod1() throws ExecutionException, InterruptedException {
-		List<String> str = asyncService.concurrentAwait();
-		return str;
-	}
+    @GetMapping("/concurrentAwait")
+    public List<String> anotherMetjhod1() throws ExecutionException, InterruptedException {
+        List<String> str = asyncService.concurrentAwait();
+        return str;
+    }
 
 }
