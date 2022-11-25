@@ -106,12 +106,19 @@ public class DepartmentController {
 ////		Thread.sleep(3000);
 //		return excelProcessStateService.getProductProcessStatus(Long.parseLong(id));
 //	}
+    @GetMapping("/restemplateCall")
+    public void restTemplateCall() {
+        System.out.println("inside restemplate call method >>>> ");
+        departmentService.restTemplateCall();
+    }
+
     @GetMapping("/normalExport")
     public void normalExportToExcel(HttpServletResponse response) throws IOException, InterruptedException {
         try {
             response.setContentType("application/octet-stream");
             String headerKey = "Content-Disposition";
-            String headervalue = "attachment; filename=Student_info.xlsx";
+            String str = "Student_info".replace("_", " ");
+            String headervalue = String.format("attachment; filename=%s%s", str, ".xlsx");
             Thread.sleep(1000);
             response.setHeader(headerKey, headervalue);
             List<Product> products = productService.get200Products();

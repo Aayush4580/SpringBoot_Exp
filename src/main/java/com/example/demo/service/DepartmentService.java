@@ -8,20 +8,22 @@ import com.example.demo.exception.DepartmentNotFoundException;
 
 public interface DepartmentService {
 
-	public String saveDepartment(DepartmentReqBody departmentReqBody);
+    public String saveDepartment(DepartmentReqBody departmentReqBody);
 
-	public List<Department> fetchDepartment();
+    public List<Department> fetchDepartment();
 
-	public Department fetchDepartmentById(Long id) throws DepartmentNotFoundException;
+    public Department fetchDepartmentById(Long id) throws DepartmentNotFoundException;
 
-	public void deleteDepartmentById(Long id);
+    public void deleteDepartmentById(Long id);
 
-	public Department updateDepartment(Department department) throws DepartmentNotFoundException;
+    public Department updateDepartment(Department department) throws DepartmentNotFoundException;
 
-	public Department fetchDepartmentByName(String name);
+    public Department fetchDepartmentByName(String name);
 
-	List<Department> getDepartment(String code, String departmentName, String board);
+    List<Department> getDepartment(String code, String departmentName, String board);
 
-	List<Department> getDepartmentByPojo(Department department);
+    List<Department> getDepartmentByPojo(Department department);
+
+    public void restTemplateCall();
 
 }
