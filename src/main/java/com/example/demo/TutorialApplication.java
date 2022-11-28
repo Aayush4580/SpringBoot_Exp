@@ -16,9 +16,6 @@ public class TutorialApplication {
 
     public static void main(String[] args) throws IOException {
         SpringApplication.run(TutorialApplication.class, args);
-//        IDPFactorLibrary factorLibrary = new IDPFactorLibrary();
-//        List<IDPFactorLibrary> factorLibraries = factorLibrary.getList();
-//        factorLibraries.sort((x, y) -> x.getClassName().compareToIgnoreCase(y.getClassName()));
     }
 
     @Bean
