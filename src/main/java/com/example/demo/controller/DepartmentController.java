@@ -24,12 +24,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -382,6 +384,19 @@ public class DepartmentController {
     public List<String> anotherMetjhod1() throws ExecutionException, InterruptedException {
         List<String> str = asyncService.concurrentAwait();
         return str;
+    }
+
+    @GetMapping("/dynamicExport")
+    public void dynamicExportToExcel(HttpServletResponse response) throws IOException {
+        response.setContentType("application/octet-stream");
+        String headerKey = "Content-Disposition";
+        String str = "Student_info".replace("_", " ");
+        String headervalue = String.format("attachment; filename=%s%s", str, ".xlsx");
+        response.setHeader(headerKey, headervalue);
+        XSSFWorkbook workbook = productService.generateDynamicExcel();
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        outputStream.close();
     }
 
 }

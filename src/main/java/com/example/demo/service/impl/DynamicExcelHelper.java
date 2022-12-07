@@ -49,10 +49,12 @@ public class DynamicExcelHelper {
                             cell.setCellValue(String.valueOf(cellValue));
                         } else if (cellValue instanceof Integer) {
                             cell.setCellValue((Integer) cellValue);
+                        } else if (cellValue instanceof Double) {
+                            cell.setCellValue((Double) cellValue);
                         }
                     }
                 }
-                sheet.autoSizeColumn(colCount);
+//                sheet.autoSizeColumn(colCount);
                 colCount++;
             }
         }
