@@ -1,8 +1,5 @@
 package com.example.demo.entity;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,14 +7,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
-import com.example.demo.dto.ExcelGeneratableRows;
-import com.example.demo.dto.ExcelRow;
-
 import lombok.Data;
 
 @Entity
 @Data
-public class Product implements ExcelGeneratableRows {
+public class Product
+//implements ExcelGeneratableRows 
+{
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_generator")
@@ -35,17 +31,17 @@ public class Product implements ExcelGeneratableRows {
 
     private Double productPrice;
 
-    @Override
-    public Map<String, ExcelRow<?>> getRowForExcel() {
-        // TODO Auto-generated method stub
-        return new LinkedHashMap<>() {
-            {
-                put("Product Id", new ExcelRow<>(productId));
-                put("Product Name", new ExcelRow<>(productName));
-                put("Product Desc", new ExcelRow<>(productDesc));
-                put("Product Price", new ExcelRow<>(productPrice));
-            }
-        };
-    }
+//    @Override
+//    public Map<String, ExcelRow<?>> getRowForExcel() {
+//        // TODO Auto-generated method stub
+//        return new LinkedHashMap<>() {
+//            {
+//                put("Product Id", new ExcelRow<>(productId));
+//                put("Product Name", new ExcelRow<>(productName));
+//                put("Product Desc", new ExcelRow<>(productDesc));
+//                put("Product Price", new ExcelRow<>(productPrice));
+//            }
+//        };
+//    }
 
 }

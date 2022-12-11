@@ -60,6 +60,17 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>4.1.2</version>
 		</dependency>
+		<!-- CSV-->
+		<!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
+		<!-- https://mvnrepository.com/artifact/org.supercsv/supercsv -->
+		<!-- https://mvnrepository.com/artifact/net.sf.supercsv/super-csv -->
+		<dependency>
+			<groupId>net.sf.supercsv</groupId>
+			<artifactId>super-csv</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>

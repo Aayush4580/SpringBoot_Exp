@@ -14,7 +14,10 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -62,6 +65,7 @@ import com.example.demo.repository.ProductRepository;
 import com.example.demo.service.AsyncService;
 import com.example.demo.service.DepartmentService;
 import com.example.demo.service.ProductService;
+import com.example.demo.service.impl.CreateopenCSV;
 import com.example.demo.service.impl.ExcelHelper;
 import com.example.demo.util.Util;
 
@@ -112,6 +116,23 @@ public class DepartmentController {
     public void restTemplateCall() {
         System.out.println("inside restemplate call method >>>> ");
         departmentService.restTemplateCall();
+    }
+
+    @GetMapping("/generateCSV")
+    public void exportToCSV(HttpServletResponse response) throws IOException {
+        response.setContentType("text/csv");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=CSV_" + currentDateTime + ".csv";
+        response.setHeader(headerKey, headerValue);
+
+        List<Product> listUsers = productService.getAllProducts();
+        String[] csvHeader = { "ID", "Product Id", "Product Name", "Product Price", "Product Desc" };
+        // Header count should match with pojo parameters
+        CreateopenCSV.writeDataToCSVUsingArray(response.getWriter(), csvHeader, listUsers);
+
     }
 
     @GetMapping("/normalExport")
