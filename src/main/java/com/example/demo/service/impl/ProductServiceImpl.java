@@ -1,7 +1,6 @@
 package com.example.demo.service.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.demo.dto.ExcelGeneratableRows;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.ProductExcelProcessState;
 import com.example.demo.repository.ProductExcelProcessStateRepository;
@@ -57,8 +55,8 @@ public class ProductServiceImpl implements ProductService {
 
         List<Product> products = productRepository.get200Products();
         XSSFWorkbook workbook = new XSSFWorkbook();
-        List<ExcelGeneratableRows> excelGeneratableRows = new ArrayList<>(products);
-        DynamicExcelHelper.writeToExcel(workbook, "Sheet1", excelGeneratableRows);
+//        List<ExcelGeneratableRows> excelGeneratableRows = new ArrayList<>(products);
+//        DynamicExcelHelper.writeToExcel(workbook, "Sheet1", excelGeneratableRows);
         return workbook;
     }
 }

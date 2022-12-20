@@ -28,200 +28,200 @@ import com.example.demo.entity.Product;
 
 public class ExcelHelper {
 
-	// check that file is of excel type or not
-	public static boolean checkExcelFormat(MultipartFile file) {
+    // check that file is of excel type or not
+    public static boolean checkExcelFormat(MultipartFile file) {
 
-		String contentType = file.getContentType();
+        String contentType = file.getContentType();
 
-		if (contentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
-			return true;
-		} else {
-			return false;
-		}
+        if (contentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+            return true;
+        } else {
+            return false;
+        }
 
-	}
+    }
 
-	// convert excel to list of products
-	public static List<Product> convertExcelToListOfProduct(InputStream is) {
-		List<Product> list = new ArrayList<>();
+    // convert excel to list of products
+    public static List<Product> convertExcelToListOfProduct(InputStream is) {
+        List<Product> list = new ArrayList<>();
 
-		try {
+        try {
 
-			try (XSSFWorkbook workbook = new XSSFWorkbook(is)) {
-				XSSFSheet sheet = workbook.getSheet("Sheet1");
+            try (XSSFWorkbook workbook = new XSSFWorkbook(is)) {
+                XSSFSheet sheet = workbook.getSheet("Sheet1");
 
-				int rowNumber = 0;
-				Iterator<Row> iterator = sheet.iterator();
+                int rowNumber = 0;
+                Iterator<Row> iterator = sheet.iterator();
 
-				while (iterator.hasNext()) {
-					Row row = iterator.next();
+                while (iterator.hasNext()) {
+                    Row row = iterator.next();
 
-					if (rowNumber == 0) {
-						rowNumber++;
-						continue;
-					}
+                    if (rowNumber == 0) {
+                        rowNumber++;
+                        continue;
+                    }
 
-					Iterator<Cell> cells = row.iterator();
+                    Iterator<Cell> cells = row.iterator();
 
-					int cid = 0;
+                    int cid = 0;
 
-					Product p = new Product();
+                    Product p = new Product();
 
-					while (cells.hasNext()) {
-						Cell cell = cells.next();
+                    while (cells.hasNext()) {
+                        Cell cell = cells.next();
 
-						switch (cid) {
-						case 0:
-							p.setProductId((int) cell.getNumericCellValue());
-							break;
-						case 1:
-							p.setProductName(cell.getStringCellValue());
-							break;
-						case 2:
-							p.setProductDesc(cell.getStringCellValue());
-							break;
-						case 3:
-							p.setProductPrice(cell.getNumericCellValue());
-							break;
-						default:
-							break;
-						}
-						cid++;
+                        switch (cid) {
+                            case 0:
+                                p.setProductId((int) cell.getNumericCellValue());
+                                break;
+                            case 1:
+                                p.setProductName(cell.getStringCellValue());
+                                break;
+                            case 2:
+                                p.setProductDesc(cell.getStringCellValue());
+                                break;
+                            case 3:
+                                p.setProductPrice(cell.getNumericCellValue());
+                                break;
+                            default:
+                                break;
+                        }
+                        cid++;
 
-					}
+                    }
 
-					list.add(p);
+                    list.add(p);
 
-				}
-			}
+                }
+            }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
 
-	}
+    }
 
-	// export to excel
-	private void createCell(XSSFSheet sheet, Row row, int columnCount, Object value, CellStyle style) {
-		sheet.autoSizeColumn(columnCount);
-		Cell cell = row.createCell(columnCount);
-		if (value instanceof Long) {
-			cell.setCellValue((Long) value);
-		} else if (value instanceof Integer) {
-			cell.setCellValue((Integer) value);
-		} else if (value instanceof Boolean) {
-			cell.setCellValue((Boolean) value);
-		} else if (value instanceof Double) {
-			cell.setCellValue((Double) value);
-		} else {
-			cell.setCellValue((String) value);
-		}
-		cell.setCellStyle(style);
-	}
+    // export to excel
+    private void createCell(XSSFSheet sheet, Row row, int columnCount, Object value, CellStyle style) {
+        sheet.autoSizeColumn(columnCount);
+        Cell cell = row.createCell(columnCount);
+        if (value instanceof Long) {
+            cell.setCellValue((Long) value);
+        } else if (value instanceof Integer) {
+            cell.setCellValue((Integer) value);
+        } else if (value instanceof Boolean) {
+            cell.setCellValue((Boolean) value);
+        } else if (value instanceof Double) {
+            cell.setCellValue((Double) value);
+        } else {
+            cell.setCellValue((String) value);
+        }
+        cell.setCellStyle(style);
+    }
 
-	private void writeHeaderLine(List<Product> productList, XSSFWorkbook workbook, ProgressCallable callable)
-			throws IOException {
-		XSSFSheet sheet = workbook.createSheet("Student");
+    private void writeHeaderLine(List<Product> productList, XSSFWorkbook workbook, ProgressCallable callable)
+            throws IOException {
+        XSSFSheet sheet = workbook.createSheet("Student");
 
-		Row row = sheet.createRow(0);
-		CellStyle style = workbook.createCellStyle();
-		XSSFFont font = workbook.createFont();
-		font.setBold(true);
-		font.setFontHeight(20);
-		style.setFont(font);
-		style.setAlignment(HorizontalAlignment.CENTER);
-		createCell(sheet, row, 0, "Department Information", style);
-		sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 4));
-		font.setFontHeightInPoints((short) (10));
+        Row row = sheet.createRow(0);
+        CellStyle style = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(true);
+        font.setFontHeight(20);
+        style.setFont(font);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        createCell(sheet, row, 0, "Department Information", style);
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 4));
+        font.setFontHeightInPoints((short) (10));
 
-		row = sheet.createRow(1);
-		font.setBold(true);
-		font.setFontHeight(16);
-		style.setFont(font);
-		createCell(sheet, row, 0, "Id", style);
-		createCell(sheet, row, 1, "Product Id", style);
-		createCell(sheet, row, 2, "Product Name", style);
-		createCell(sheet, row, 3, "Product Proce", style);
+        row = sheet.createRow(1);
+        font.setBold(true);
+        font.setFontHeight(16);
+        style.setFont(font);
+        createCell(sheet, row, 0, "Id", style);
+        createCell(sheet, row, 1, "Product Id", style);
+        createCell(sheet, row, 2, "Product Name", style);
+        createCell(sheet, row, 3, "Product Proce", style);
 //		createCell(sheet, row, 4, "Board", style);
 
-		float percentage = 0;
+        float percentage = 0;
 
-		// writeDataLines
-		int rowCount = 2;
+        // writeDataLines
+        int rowCount = 2;
 
-		CellStyle style1 = workbook.createCellStyle();
-		XSSFFont font1 = workbook.createFont();
-		font1.setFontHeight(14);
-		style1.setFont(font1);
+        CellStyle style1 = workbook.createCellStyle();
+        XSSFFont font1 = workbook.createFont();
+        font1.setFontHeight(14);
+        style1.setFont(font1);
 
-		float totalSize = productList.size();
+        float totalSize = productList.size();
 
-		for (Product stu : productList) {
+        for (Product stu : productList) {
 
-			Row row1 = sheet.createRow(rowCount++);
-			int columnCount = 0;
+            Row row1 = sheet.createRow(rowCount++);
+            int columnCount = 0;
 
-			percentage = (rowCount / totalSize) * 100;
-			callable.onProgess((int) percentage);
-			createCell(sheet, row1, columnCount++, stu.getId(), style1);
-			createCell(sheet, row1, columnCount++, stu.getProductId(), style1);
-			createCell(sheet, row1, columnCount++, stu.getProductName(), style1);
-			createCell(sheet, row1, columnCount++, stu.getProductPrice(), style1);
+            percentage = (rowCount / totalSize) * 100;
+            callable.onProgess((int) percentage);
+            createCell(sheet, row1, columnCount++, stu.getId(), style1);
+            createCell(sheet, row1, columnCount++, stu.getProductId(), style1);
+            createCell(sheet, row1, columnCount++, stu.getProductName(), style1);
+            createCell(sheet, row1, columnCount++, stu.getProductPrice(), style1);
 //			createCell(sheet, row1, columnCount++, stu.getBoard(), style1);
-		}
+        }
 
-	}
+    }
 
-	public void export(List<Product> productList, HttpServletResponse response, ProgressCallable callable)
-			throws IOException {
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		System.err.println("inside excel helper >>");
-		writeHeaderLine(productList, workbook, callable);
+    public void export(List<Product> productList, HttpServletResponse response, ProgressCallable callable)
+            throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        System.err.println("inside excel helper >>");
+        writeHeaderLine(productList, workbook, callable);
 
-		ServletOutputStream outputStream = response.getOutputStream();
-		workbook.write(outputStream);
-		workbook.close();
-		outputStream.close();
-	}
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
 
-	public ArrayList<File> exportMultiple(List<Product> productList, String DIRECTORY) throws IOException {
-		System.err.println("directory >> " + DIRECTORY);
-		String pathName = DIRECTORY + "temp_excel";
-		System.err.println("pathname >> " + pathName);
-		File file = new File(pathName);
-		if (Files.exists(Paths.get(pathName))) {
-			file.delete();
-		}
-		file.mkdir();
-		ArrayList<File> files = new ArrayList<>();
-		for (int i = 0; i < 3; i++) {
-			String fileName = "Excel" + (i + 1) + ".xlsx";
-			// creating excel with db list and placing them in directory
-			export(productList, pathName, fileName);
+    public ArrayList<File> exportMultiple(List<Product> productList, String DIRECTORY) throws IOException {
+        System.err.println("directory >> " + DIRECTORY);
+        String pathName = DIRECTORY + "temp_excel";
+        System.err.println("pathname >> " + pathName);
+        File file = new File(pathName);
+        if (Files.exists(Paths.get(pathName))) {
+            file.delete();
+        }
+        file.mkdir();
+        ArrayList<File> files = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            String fileName = "Excel" + (i + 1) + ".xlsx";
+            // creating excel with db list and placing them in directory
+            export(productList, pathName, fileName);
 //			String absolutePath = pathName + File.separator + fileName;
 //			System.err.println("absolutePath >>> " + absolutePath);
-			// picking up those from the directory and adding them in file-list
-			files.add(new File(pathName, fileName));
-		}
-		return files;
+            // picking up those from the directory and adding them in file-list
+            files.add(new File(pathName, fileName));
+        }
+        return files;
 
-	}
+    }
 
-	public void export(List<Product> productList, String pathName, String fileName) throws IOException {
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		writeHeaderLine(productList, workbook, new ProgressCallable() {
+    public void export(List<Product> productList, String pathName, String fileName) throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        writeHeaderLine(productList, workbook, new ProgressCallable() {
 
-			@Override
-			public void onProgess(int percentage) throws IOException {
-				// TODO Auto-generated method stub
-			}
-		});
+            @Override
+            public void onProgess(int percentage) throws IOException {
+                // TODO Auto-generated method stub
+            }
+        });
 
-		FileOutputStream fout = new FileOutputStream(new File(pathName, fileName));
-		workbook.write(fout);
-		workbook.close();
-		fout.close();
-	}
+        FileOutputStream fout = new FileOutputStream(new File(pathName, fileName));
+        workbook.write(fout);
+        workbook.close();
+        fout.close();
+    }
 
 }
