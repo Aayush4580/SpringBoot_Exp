@@ -1,19 +1,13 @@
 package com.example.demo.controller;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -71,10 +65,15 @@ public class ExcelController {
         CreateExcelPOIStream createExcelPOIStream = new CreateExcelPOIStream();
         // List<Department> departments = departmentService.fetchDepartment();
         List<Department> departments = new ArrayList<>();
-        for(int i=1;i<=200000;i++){
-            departments.add(new Department(Long.valueOf(i),"dName"+i,"DeparmentAddress"+i,"DCode"+i,"board"+i));
+        for (int i = 1; i <= 200000; i++) {
+            departments.add(
+                    new Department(Long.valueOf(i), "dName" + i, "DeparmentAddress" + i, "DCode" + i, "board" + i));
         }
-        createExcelPOIStream.downloadStreamFiles(new ArrayList<>(departments), response);
+        SXSSFWorkbook workbook = createExcelPOIStream.downloadStreamFiles(new ArrayList<>(departments));
+        ServletOutputStream out = response.getOutputStream();
+        workbook.write(out);
+        workbook.close();
+        out.close();
         System.err.println("ending time >> " + System.currentTimeMillis());
     }
 }
